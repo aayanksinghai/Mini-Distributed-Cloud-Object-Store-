@@ -5,11 +5,7 @@ import com.objectstore.common.dto.HeartbeatResponse;
 import com.objectstore.common.dto.RegisterWorkerRequest;
 import com.objectstore.common.dto.RegisterWorkerResponse;
 import com.objectstore.common.dto.WorkerChunksResponse;
-import com.objectstore.common.dto.WorkerStatus;
-import com.objectstore.common.error.ApiException;
-import com.objectstore.common.error.ErrorCode;
-import com.objectstore.controller.client.WorkerClient;
-import com.objectstore.controller.domain.WorkerEntity;
+import com.objectstore.controller.service.ReconciliationService;
 import com.objectstore.controller.service.WorkerRegistryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * Controller-hosted internal worker endpoints (PDF §6):
@@ -36,12 +30,12 @@ import java.util.Map;
 public class InternalWorkerController {
 
     private final WorkerRegistryService workerRegistryService;
-    private final WorkerClient workerClient;
+    private final ReconciliationService reconciliationService;
 
     public InternalWorkerController(WorkerRegistryService workerRegistryService,
-                                    WorkerClient workerClient) {
+                                    ReconciliationService reconciliationService) {
         this.workerRegistryService = workerRegistryService;
-        this.workerClient = workerClient;
+        this.reconciliationService = reconciliationService;
     }
 
     @PostMapping(
@@ -70,14 +64,7 @@ public class InternalWorkerController {
     public ResponseEntity<WorkerChunksResponse> getWorkerChunks(
             @PathVariable String workerId,
             @RequestParam(value = "verify", defaultValue = "false") boolean verify) {
-        WorkerEntity worker = workerRegistryService.getRequiredWorker(workerId);
-        if (worker.getStatus() != WorkerStatus.UP) {
-            throw new ApiException(503, ErrorCode.WORKER_UNAVAILABLE,
-                    "Worker '" + workerId + "' is currently DOWN",
-                    Map.of("workerId", workerId, "status", worker.getStatus()), null);
-        }
-        WorkerChunksResponse response = workerClient.listWorkerChunks(worker.getId(), worker.getBaseUrl(), verify);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(reconciliationService.getWorkerChunksWithDiff(workerId, verify));
     }
 }
 

@@ -36,13 +36,16 @@ public class WorkerRegistryService {
 
     private final WorkerRepository workerRepository;
     private final EventService eventService;
+    private final ReconciliationService reconciliationService;
     private final ControllerProperties properties;
 
     public WorkerRegistryService(WorkerRepository workerRepository,
                                  EventService eventService,
+                                 ReconciliationService reconciliationService,
                                  ControllerProperties properties) {
         this.workerRepository = workerRepository;
         this.eventService = eventService;
+        this.reconciliationService = reconciliationService;
         this.properties = properties;
     }
 
@@ -100,6 +103,8 @@ public class WorkerRegistryService {
             log.info("Worker '{}' re-registered at {} (chunks={})", workerId, baseUrl, request.chunkCount());
         }
 
+        reconciliationService.reconcileWorker(workerId);
+
         return new RegistrationOutcome(false, new RegisterWorkerResponse(
                 workerId, WorkerStatus.UP, DEFAULT_HEARTBEAT_INTERVAL_MS, existing.getRegisteredAt()));
     }
@@ -128,6 +133,7 @@ public class WorkerRegistryService {
         if (wasDown) {
             eventService.record(EventService.WORKER_UP, EventSeverity.INFO, null, null, workerId,
                     "Worker " + workerId + " resumed heartbeats and is UP");
+            reconciliationService.reconcileWorker(workerId);
         }
 
         for (String corruptChunkId : request.corruptChunkIds()) {
@@ -142,7 +148,7 @@ public class WorkerRegistryService {
 
     /**
      * Marks any currently {@code UP} worker whose last heartbeat is older than {@code heartbeatTimeout}
-     * as {@code DOWN}, recording a {@code WORKER_DOWN} event for each transition.
+     * as {@code DOWN}, recording a {@code WORKER_DOWN} event and marking its replicas {@code UNAVAILABLE}.
      *
      * @return list of worker IDs that transitioned from UP to DOWN during this check
      */
@@ -165,6 +171,7 @@ public class WorkerRegistryService {
                 eventService.record(EventService.WORKER_DOWN, EventSeverity.WARN, null, null, worker.getId(),
                         "Worker " + worker.getId() + " missed heartbeats since " + worker.getLastHeartbeatAt()
                                 + " and is now marked DOWN");
+                reconciliationService.handleWorkerDown(worker.getId());
             }
         }
         return newlyDown;

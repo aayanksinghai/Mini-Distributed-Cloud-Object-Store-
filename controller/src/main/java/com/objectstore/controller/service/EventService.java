@@ -34,6 +34,8 @@ public class EventService {
     public static final String OBJECT_DELETED = "OBJECT_DELETED";
     public static final String CHUNK_REPAIRED = "CHUNK_REPAIRED";
     public static final String RF_RESTORED = "RF_RESTORED";
+    public static final String UNDER_REPLICATED = "UNDER_REPLICATED";
+    public static final String WORKER_RECONCILED = "WORKER_RECONCILED";
 
     private final SystemEventRepository repository;
 

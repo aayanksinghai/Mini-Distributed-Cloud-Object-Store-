@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 6 (Metadata Operations, Listing & Deletion) — **Completed**. Next up: Phase 7 (Worker Failure Handling & Rejoin Reconciliation).
+> **Status:** Phase 7 (Worker Failure Handling & Rejoin Reconciliation) — **Completed**. Next up: Phase 8 (Data Integrity Verification & Recovery).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -634,15 +634,15 @@ flowchart LR
 - [x] Tests: `ObjectMetadataListDeleteIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering all status codes 200/204/400/404, confirming `PATCH` performs zero worker chunk PUT/GET calls, pagination & sorting, and deletion with both `UP` and `DOWN` workers)
 **Acceptance:** All 6 client APIs behave per §8.2; all 53 tests pass (`mvn -o verify`).
 
-### Phase 7 — Worker Failure Handling
+### Phase 7 — Worker Failure Handling ✅
 **Tasks:**
-- [ ] Mark replicas `UNAVAILABLE` on worker DOWN; under-replication events
-- [ ] Download failover to surviving replica (including mid-stream I/O failure)
-- [ ] Automatic re-replication after grace period (D7)
-- [ ] Rejoin reconciliation: re-adopt / trim surplus / GC orphans & pending deletes (D8, D15)
-- [ ] Controller-side `GET /internal/workers/{id}/chunks` diff (D4)
-- [ ] Tests: integration with stubbed DOWN worker; E2E script `docker stop worker2` → download OK → RF restored → `docker start worker2` → reconciled RF = 2 exactly
-**Acceptance:** demo scenario §14.5 passes end-to-end via script.
+- [x] Mark replicas `UNAVAILABLE` on worker DOWN; under-replication events (`ReconciliationService.handleWorkerDown`, `EventService.UNDER_REPLICATED`)
+- [x] Download failover to surviving replica (including mid-stream I/O failure)
+- [x] Automatic re-replication after grace period (D7)
+- [x] Rejoin reconciliation: re-adopt / trim surplus / GC orphans & pending deletes (`ReconciliationService.reconcileWorker`, `ReconciliationResultInfo`, `POST /api/v1/admin/workers/{workerId}/reconcile`, D8, D15)
+- [x] Controller-side `GET /internal/workers/{id}/chunks` diff (`ReconciliationService.getWorkerChunksWithDiff`, D4)
+- [x] Tests: `WorkerFailureAndReconciliationIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering worker DOWN replica state transition to `UNAVAILABLE`, continued byte-identical download from surviving replicas, fast rejoin re-adoption within grace period, full failure + re-replication + deferred deletion while DOWN + rejoin reconciliation trimming surplus 3rd copies to exact RF = 2, and `GET /internal/workers/{id}/chunks` inventory diff)
+**Acceptance:** Worker failure, read failover, re-replication, and rejoin reconciliation verified end-to-end; all 56 tests pass (`mvn -o verify`).
 
 ### Phase 8 — Data Integrity Verification & Recovery
 **Tasks:**
@@ -732,8 +732,8 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved (`Chunker` + `chunks.chunk_index`)
 - [x] RF = 2 on distinct workers; distribution across all workers (`PlacementService` + parallel virtual-thread dual-write)
 - [x] Under-replication detection + automatic restoration (`ReplicationService` + `RepairScheduler` + `POST /api/v1/admin/replication/repair`)
-- [ ] Worker failure detection; reads continue from replicas
-- [ ] Rejoin reconciliation (RF exactly 2 after restart)
+- [x] Worker failure detection; reads continue from replicas (`HeartbeatMonitor` + `WorkerRegistryService` + `ObjectService` failover)
+- [x] Rejoin reconciliation (RF exactly 2 after restart; `ReconciliationService`)
 - [ ] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired
 - [x] Custom metadata upload / retrieve / patch without re-upload (`ObjectService` + `ObjectController`)
 - [ ] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events
@@ -754,4 +754,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-31 | 4 | Implemented Object Download & Reconstruction (`GET /api/v1/objects/{objectId}`): pre-flight replica availability check (`prepareDownload`), ordered streaming chunk reconstruction (`streamDownload` via `StreamingResponseBody`), controller-side SHA-256 verification on read with automatic replica failover and corruption marking (`markReplicaCorrupted`), response headers (`Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, `X-Object-Checksum-SHA256`), and `ObjectDownloadIntegrationTest`. All 47 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 5 | Implemented Replication (RF = 2) & Repair Engine: parallel virtual-thread dual-write on upload, `ReplicationStatus`/`ClusterStatusInfo`/`RepairResultInfo` DTOs, `ReplicationService` (cluster status evaluation, under-replication detection with `reReplicationGracePeriod`, controller-mediated re-replication to distinct `UP` workers, and in-place overwrite repair of `CORRUPTED` replicas), `RepairScheduler`, `GET /api/v1/cluster/status`, `POST /api/v1/admin/replication/repair`, and `ReplicationIntegrationTest`. All 50 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 6 | Implemented Metadata Operations, Listing & Deletion: `ChunkReplicaInfo`/`ChunkMetadataInfo`/`ObjectMetadataResponse`/`ObjectListPage` DTOs, Flyway `V4__pending_deletions.sql` (`PendingDeletionEntity`), `GET /api/v1/objects/{id}/metadata`, `PATCH /api/v1/objects/{id}/metadata` (JSON Merge Patch without re-uploading data), `GET /api/v1/objects` (pagination & sorting), `DELETE /api/v1/objects/{id}` (`204 No Content`, immediate worker chunk deletion + deferred deletion queue for `DOWN` workers), and `ObjectMetadataListDeleteIntegrationTest`. All 53 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 7 | Implemented Worker Failure Handling & Rejoin Reconciliation: `ReconciliationResultInfo` and enriched `WorkerChunksResponse` (with `expectedChunkIds`, `missingChunkIds`, `orphanChunkIds`, `corruptChunkIds`), `ReconciliationService` (`handleWorkerDown` marking replicas `UNAVAILABLE` + recording `UNDER_REPLICATED` events, `reconcileWorker` executing `pending_deletions`, garbage-collecting orphans, re-adopting valid replicas, removing missing replicas, and trimming surplus 3rd copies back to exact `RF = 2`, plus `getWorkerChunksWithDiff`), wired into `WorkerRegistryService`, `InternalWorkerController`, and `ClusterController` (`POST /api/v1/admin/workers/{workerId}/reconcile`), and verified via `WorkerFailureAndReconciliationIntegrationTest`. All 56 tests pass (`mvn -o verify`). |
 
