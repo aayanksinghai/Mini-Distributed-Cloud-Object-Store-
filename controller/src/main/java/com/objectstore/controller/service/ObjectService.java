@@ -2,10 +2,15 @@ package com.objectstore.controller.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.objectstore.common.dto.ChunkMetadataInfo;
+import com.objectstore.common.dto.ChunkReplicaInfo;
 import com.objectstore.common.dto.EventSeverity;
 import com.objectstore.common.dto.ObjectInfo;
+import com.objectstore.common.dto.ObjectListPage;
+import com.objectstore.common.dto.ObjectMetadataResponse;
 import com.objectstore.common.dto.ObjectStatus;
 import com.objectstore.common.dto.ReplicaState;
+import com.objectstore.common.dto.ReplicationStatus;
 import com.objectstore.common.dto.WorkerStatus;
 import com.objectstore.common.error.ApiException;
 import com.objectstore.common.error.ErrorCode;
@@ -15,17 +20,23 @@ import com.objectstore.controller.config.ControllerProperties;
 import com.objectstore.controller.domain.ChunkEntity;
 import com.objectstore.controller.domain.ChunkReplicaEntity;
 import com.objectstore.controller.domain.ObjectMetadataEntity;
+import com.objectstore.controller.domain.PendingDeletionEntity;
 import com.objectstore.controller.domain.StoredObjectEntity;
 import com.objectstore.controller.domain.WorkerEntity;
 import com.objectstore.controller.repository.ChunkReplicaRepository;
 import com.objectstore.controller.repository.ChunkRepository;
 import com.objectstore.controller.repository.ObjectMetadataRepository;
+import com.objectstore.controller.repository.PendingDeletionRepository;
 import com.objectstore.controller.repository.StoredObjectRepository;
 import com.objectstore.controller.repository.WorkerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,9 +79,11 @@ public class ObjectService {
     private final ObjectMetadataRepository metadataRepository;
     private final ChunkRepository chunkRepository;
     private final ChunkReplicaRepository replicaRepository;
+    private final PendingDeletionRepository pendingDeletionRepository;
     private final WorkerRepository workerRepository;
     private final Chunker chunker;
     private final PlacementService placementService;
+    private final ReplicationService replicationService;
     private final WorkerClient workerClient;
     private final EventService eventService;
     private final ControllerProperties properties;
@@ -81,9 +94,11 @@ public class ObjectService {
                          ObjectMetadataRepository metadataRepository,
                          ChunkRepository chunkRepository,
                          ChunkReplicaRepository replicaRepository,
+                         PendingDeletionRepository pendingDeletionRepository,
                          WorkerRepository workerRepository,
                          Chunker chunker,
                          PlacementService placementService,
+                         ReplicationService replicationService,
                          WorkerClient workerClient,
                          EventService eventService,
                          ControllerProperties properties,
@@ -93,9 +108,11 @@ public class ObjectService {
         this.metadataRepository = metadataRepository;
         this.chunkRepository = chunkRepository;
         this.replicaRepository = replicaRepository;
+        this.pendingDeletionRepository = pendingDeletionRepository;
         this.workerRepository = workerRepository;
         this.chunker = chunker;
         this.placementService = placementService;
+        this.replicationService = replicationService;
         this.workerClient = workerClient;
         this.eventService = eventService;
         this.properties = properties;
@@ -328,6 +345,316 @@ public class ObjectService {
                     entity.setLastVerifiedAt(now);
                     replicaRepository.save(entity);
                 }));
+    }
+
+    /**
+     * §5.3 Get Object Metadata — retrieves complete system and custom metadata (including ordered chunks
+     * and replica locations) without downloading chunk data.
+     */
+    @Transactional(readOnly = true)
+    public ObjectMetadataResponse getObjectMetadata(UUID objectId) {
+        StoredObjectEntity object = getRequiredActiveObject(objectId);
+        return buildObjectMetadataResponse(object);
+    }
+
+    /**
+     * §5.4 Update Object Metadata — merges custom metadata (JSON Merge Patch style, plan.md D12):
+     * non-null string values add or update keys, {@code null} values delete keys, and omitted keys
+     * remain unchanged. Does not re-upload or touch chunk data.
+     */
+    @Transactional
+    public ObjectMetadataResponse updateCustomMetadata(UUID objectId, Map<String, Object> patch) {
+        if (patch == null) {
+            throw new ApiException(400, ErrorCode.INVALID_METADATA, "Metadata patch body must be a JSON object");
+        }
+        StoredObjectEntity object = getRequiredActiveObject(objectId);
+
+        Map<String, ObjectMetadataEntity> existingByKey = metadataRepository
+                .findByIdObjectIdOrderByIdMetaKeyAsc(objectId)
+                .stream()
+                .collect(Collectors.toMap(ObjectMetadataEntity::getMetaKey, Function.identity(),
+                        (a, b) -> a, LinkedHashMap::new));
+
+        for (Map.Entry<String, Object> entry : patch.entrySet()) {
+            String key = entry.getKey();
+            Object rawValue = entry.getValue();
+            validateMetadataKey(key);
+            if (rawValue == null) {
+                ObjectMetadataEntity removed = existingByKey.remove(key);
+                if (removed != null) {
+                    metadataRepository.delete(removed);
+                }
+            } else if (rawValue instanceof String strVal) {
+                validateMetadataValue(key, strVal);
+                ObjectMetadataEntity existing = existingByKey.get(key);
+                if (existing != null) {
+                    existing.setMetaValue(strVal);
+                    metadataRepository.save(existing);
+                } else {
+                    ObjectMetadataEntity created = new ObjectMetadataEntity(objectId, key, strVal);
+                    metadataRepository.save(created);
+                    existingByKey.put(key, created);
+                }
+            } else {
+                throw new ApiException(400, ErrorCode.INVALID_METADATA,
+                        "Metadata value for key '" + key + "' must be a string or null");
+            }
+        }
+
+        if (existingByKey.size() > MAX_METADATA_KEYS) {
+            throw new ApiException(400, ErrorCode.INVALID_METADATA,
+                    "Total custom metadata keys (" + existingByKey.size() + ") exceeds maximum " + MAX_METADATA_KEYS);
+        }
+
+        object.setUpdatedAt(Instant.now());
+        objectRepository.save(object);
+
+        eventService.record(EventService.OBJECT_METADATA_UPDATED, EventSeverity.INFO, objectId, null, null,
+                "Updated custom metadata for object '" + object.getName() + "' (" + existingByKey.size() + " keys)");
+
+        return buildObjectMetadataResponse(object);
+    }
+
+    /**
+     * §5.5 Delete Object — deletes an object, its metadata, and all stored chunk replicas across workers.
+     * Replicas residing on currently {@code DOWN} or unreachable workers are queued in {@code pending_deletions}
+     * for deferred removal upon worker rejoin (plan.md D15).
+     */
+    public void deleteObject(UUID objectId) {
+        StoredObjectEntity object = txTemplate.execute(status -> {
+            StoredObjectEntity found = objectRepository.findById(objectId)
+                    .orElseThrow(() -> new ApiException(404, ErrorCode.OBJECT_NOT_FOUND,
+                            "Object " + objectId + " does not exist",
+                            Map.of("objectId", objectId.toString()), null));
+            if (found.getStatus() != ObjectStatus.ACTIVE) {
+                throw new ApiException(409, ErrorCode.OBJECT_NOT_READY,
+                        "Object " + objectId + " is in state " + found.getStatus() + " and cannot be deleted",
+                        Map.of("objectId", objectId.toString(), "status", found.getStatus().name()), null);
+            }
+            found.setStatus(ObjectStatus.DELETING);
+            found.setUpdatedAt(Instant.now());
+            return objectRepository.save(found);
+        });
+
+        List<ChunkEntity> chunks = chunkRepository.findByObjectIdOrderByChunkIndexAsc(objectId);
+        List<String> chunkIds = chunks.stream().map(ChunkEntity::getId).toList();
+        Map<String, ChunkEntity> chunksById = chunks.stream()
+                .collect(Collectors.toMap(ChunkEntity::getId, Function.identity()));
+        List<ChunkReplicaEntity> replicas = chunkIds.isEmpty()
+                ? List.of()
+                : replicaRepository.findByChunkIdInOrderByChunkIdAscWorkerIdAsc(chunkIds);
+        Map<String, WorkerEntity> workersById = workerRepository.findAllByOrderByIdAsc().stream()
+                .collect(Collectors.toMap(WorkerEntity::getId, Function.identity()));
+
+        for (ChunkReplicaEntity replica : replicas) {
+            WorkerEntity worker = workersById.get(replica.getWorkerId());
+            ChunkEntity chunk = chunksById.get(replica.getChunkId());
+            int chunkBytes = chunk != null ? chunk.getSizeBytes() : 0;
+
+            if (worker != null && worker.getStatus() == WorkerStatus.UP) {
+                try {
+                    workerClient.deleteChunk(worker.getId(), worker.getBaseUrl(), replica.getChunkId());
+                    decrementWorkerCounters(worker.getId(), chunkBytes);
+                } catch (Exception e) {
+                    log.warn("Could not delete chunk {} from UP worker '{}'; queueing pending deletion: {}",
+                            replica.getChunkId(), worker.getId(), e.getMessage());
+                    queuePendingDeletion(replica.getChunkId(), worker.getId());
+                }
+            } else if (worker != null) {
+                queuePendingDeletion(replica.getChunkId(), worker.getId());
+            }
+        }
+
+        txTemplate.executeWithoutResult(status -> {
+            if (!chunkIds.isEmpty()) {
+                replicaRepository.deleteByChunkIdIn(chunkIds);
+            }
+            chunkRepository.deleteByObjectId(objectId);
+            metadataRepository.deleteByIdObjectId(objectId);
+            objectRepository.deleteById(objectId);
+        });
+
+        eventService.record(EventService.OBJECT_DELETED, EventSeverity.INFO, objectId, null, null,
+                "Deleted object '" + object.getName() + "' (" + chunks.size() + " chunks)");
+    }
+
+    /**
+     * §5.6 List Objects — returns a paginated list of currently stored ({@code ACTIVE}) objects.
+     */
+    @Transactional(readOnly = true)
+    public ObjectListPage listObjects(int page, int size, String sortSpec) {
+        if (page < 0) {
+            throw new ApiException(400, ErrorCode.VALIDATION_ERROR, "Page index must not be negative: " + page);
+        }
+        if (size < 1 || size > 200) {
+            throw new ApiException(400, ErrorCode.VALIDATION_ERROR, "Page size must be between 1 and 200: " + size);
+        }
+
+        Sort sort = parseSort(sortSpec);
+        Page<StoredObjectEntity> objectPage = objectRepository.findByStatus(
+                ObjectStatus.ACTIVE, PageRequest.of(page, size, sort));
+
+        List<StoredObjectEntity> entities = objectPage.getContent();
+        List<UUID> objectIds = entities.stream().map(StoredObjectEntity::getId).toList();
+        Map<UUID, Map<String, String>> metadataByObject = new LinkedHashMap<>();
+        if (!objectIds.isEmpty()) {
+            for (ObjectMetadataEntity meta : metadataRepository.findByIdObjectIdInOrderByIdObjectIdAscIdMetaKeyAsc(objectIds)) {
+                metadataByObject
+                        .computeIfAbsent(meta.getObjectId(), k -> new LinkedHashMap<>())
+                        .put(meta.getMetaKey(), meta.getMetaValue());
+            }
+        }
+
+        List<ObjectInfo> items = entities.stream()
+                .map(obj -> new ObjectInfo(
+                        obj.getId(),
+                        obj.getName(),
+                        obj.getSizeBytes(),
+                        obj.getContentType(),
+                        "sha256:" + obj.getChecksumSha256(),
+                        obj.getChunkCount(),
+                        obj.getCreatedAt(),
+                        obj.getUpdatedAt(),
+                        metadataByObject.getOrDefault(obj.getId(), Map.of())))
+                .toList();
+
+        return new ObjectListPage(
+                items,
+                objectPage.getNumber(),
+                objectPage.getSize(),
+                objectPage.getTotalElements(),
+                objectPage.getTotalPages());
+    }
+
+    private StoredObjectEntity getRequiredActiveObject(UUID objectId) {
+        StoredObjectEntity object = objectRepository.findById(objectId)
+                .orElseThrow(() -> new ApiException(404, ErrorCode.OBJECT_NOT_FOUND,
+                        "Object " + objectId + " does not exist",
+                        Map.of("objectId", objectId.toString()), null));
+        if (object.getStatus() != ObjectStatus.ACTIVE) {
+            throw new ApiException(409, ErrorCode.OBJECT_NOT_READY,
+                    "Object " + objectId + " is currently in state " + object.getStatus(),
+                    Map.of("objectId", objectId.toString(), "status", object.getStatus().name()), null);
+        }
+        return object;
+    }
+
+    private ObjectMetadataResponse buildObjectMetadataResponse(StoredObjectEntity object) {
+        UUID objectId = object.getId();
+        Map<String, String> customMeta = new LinkedHashMap<>();
+        for (ObjectMetadataEntity meta : metadataRepository.findByIdObjectIdOrderByIdMetaKeyAsc(objectId)) {
+            customMeta.put(meta.getMetaKey(), meta.getMetaValue());
+        }
+
+        List<ChunkEntity> chunks = chunkRepository.findByObjectIdOrderByChunkIndexAsc(objectId);
+        List<String> chunkIds = chunks.stream().map(ChunkEntity::getId).toList();
+        Map<String, List<ChunkReplicaEntity>> replicasByChunk = chunkIds.isEmpty()
+                ? Map.of()
+                : replicaRepository.findByChunkIdInOrderByChunkIdAscWorkerIdAsc(chunkIds).stream()
+                        .collect(Collectors.groupingBy(ChunkReplicaEntity::getChunkId));
+        Map<String, WorkerEntity> workersById = workerRepository.findAllByOrderByIdAsc().stream()
+                .collect(Collectors.toMap(WorkerEntity::getId, Function.identity()));
+
+        List<ChunkMetadataInfo> chunkDtos = new ArrayList<>(chunks.size());
+        boolean anyUnavailable = false;
+        boolean anyDegraded = false;
+
+        for (ChunkEntity chunk : chunks) {
+            List<ChunkReplicaEntity> replicas = replicasByChunk.getOrDefault(chunk.getId(), List.of());
+            ReplicationStatus chunkStatus = replicationService.evaluateChunkReplication(replicas, workersById);
+            if (chunkStatus == ReplicationStatus.UNAVAILABLE) {
+                anyUnavailable = true;
+            } else if (chunkStatus == ReplicationStatus.DEGRADED) {
+                anyDegraded = true;
+            }
+
+            List<ChunkReplicaInfo> replicaDtos = replicas.stream()
+                    .map(r -> {
+                        WorkerEntity w = workersById.get(r.getWorkerId());
+                        WorkerStatus workerStatus = w != null ? w.getStatus() : WorkerStatus.DOWN;
+                        return new ChunkReplicaInfo(r.getWorkerId(), r.getState(), workerStatus, r.getLastVerifiedAt());
+                    })
+                    .toList();
+
+            chunkDtos.add(new ChunkMetadataInfo(
+                    chunk.getId(),
+                    chunk.getChunkIndex(),
+                    chunk.getSizeBytes(),
+                    "sha256:" + chunk.getChecksumSha256(),
+                    chunkStatus,
+                    replicaDtos));
+        }
+
+        ReplicationStatus objectReplicationStatus;
+        if (anyUnavailable) {
+            objectReplicationStatus = ReplicationStatus.UNAVAILABLE;
+        } else if (anyDegraded) {
+            objectReplicationStatus = ReplicationStatus.DEGRADED;
+        } else {
+            objectReplicationStatus = ReplicationStatus.HEALTHY;
+        }
+
+        return new ObjectMetadataResponse(
+                object.getId(),
+                object.getName(),
+                object.getSizeBytes(),
+                object.getContentType(),
+                "sha256:" + object.getChecksumSha256(),
+                object.getChunkCount(),
+                object.getChunkSize(),
+                properties.storage().replicationFactor(),
+                objectReplicationStatus,
+                object.getCreatedAt(),
+                object.getUpdatedAt(),
+                customMeta,
+                chunkDtos);
+    }
+
+    private void decrementWorkerCounters(String workerId, int chunkBytes) {
+        txTemplate.executeWithoutResult(status ->
+                workerRepository.findById(workerId).ifPresent(w -> {
+                    w.setChunkCount(Math.max(0, w.getChunkCount() - 1));
+                    w.setUsedBytes(Math.max(0L, w.getUsedBytes() - chunkBytes));
+                    w.setFreeBytes(w.getFreeBytes() + chunkBytes);
+                    workerRepository.save(w);
+                }));
+    }
+
+    private void queuePendingDeletion(String chunkId, String workerId) {
+        txTemplate.executeWithoutResult(status -> {
+            if (pendingDeletionRepository.findByChunkIdAndWorkerId(chunkId, workerId).isEmpty()) {
+                pendingDeletionRepository.save(new PendingDeletionEntity(chunkId, workerId, Instant.now()));
+            }
+        });
+    }
+
+    private static Sort parseSort(String sortSpec) {
+        if (sortSpec == null || sortSpec.isBlank()) {
+            return Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+        String[] parts = sortSpec.split(",", 2);
+        String rawField = parts[0].trim();
+        String property = switch (rawField) {
+            case "createdAt" -> "createdAt";
+            case "updatedAt" -> "updatedAt";
+            case "name" -> "name";
+            case "size", "sizeBytes" -> "sizeBytes";
+            default -> throw new ApiException(400, ErrorCode.VALIDATION_ERROR,
+                    "Unsupported sort field '" + rawField + "'; allowed: createdAt, updatedAt, name, size");
+        };
+        Sort.Direction direction = Sort.Direction.DESC;
+        if (parts.length > 1 && !parts[1].isBlank()) {
+            String dir = parts[1].trim();
+            if ("asc".equalsIgnoreCase(dir)) {
+                direction = Sort.Direction.ASC;
+            } else if ("desc".equalsIgnoreCase(dir)) {
+                direction = Sort.Direction.DESC;
+            } else {
+                throw new ApiException(400, ErrorCode.VALIDATION_ERROR,
+                        "Unsupported sort direction '" + dir + "'; allowed: asc, desc");
+            }
+        }
+        return Sort.by(direction, property);
     }
 
     /**

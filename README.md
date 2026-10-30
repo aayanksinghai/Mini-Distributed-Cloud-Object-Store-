@@ -14,7 +14,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 - **Phase 3 — Object Upload & Chunking:** Completed
 - **Phase 4 — Download & Reconstruction:** Completed
 - **Phase 5 — Replication (RF = 2) & Repair Engine:** Completed
-- **Phase 6 — Metadata Operations, Listing & Deletion:** Pending
+- **Phase 6 — Metadata Operations, Listing & Deletion:** Completed
+- **Phase 7 — Worker Failure Handling & Rejoin Reconciliation:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -107,11 +108,15 @@ docker-compose down
 
 ---
 
-## Implemented Endpoints (Phases 2–5)
+## Implemented Endpoints (Phases 2–6)
 
 ### Client Object API (Controller `:8080`)
 - `POST /api/v1/objects` (`multipart/form-data`: required `file`, optional JSON string `metadata`) — Splits the uploaded object into 1 MiB chunks, computes SHA-256 checksums, places 2 replicas of each chunk in parallel on distinct `UP` workers, and returns `201 Created` with `ObjectInfo`.
 - `GET /api/v1/objects/{objectId}` — Streams the complete reconstructed object in chunk order with its original `Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, and `X-Object-Checksum-SHA256` (`200 OK` / `404 Not Found` / `409 Conflict` / `503 Service Unavailable`). Verifies each chunk's SHA-256 on read and transparently fails over to surviving replicas if a worker is down or a replica is corrupted.
+- `GET /api/v1/objects/{objectId}/metadata` — Returns system-maintained metadata, custom key-value metadata, `replicationStatus`, and the ordered chunk + replica placement map without downloading object bytes (`200 OK` / `404 Not Found` / `409 Conflict`).
+- `PATCH /api/v1/objects/{objectId}/metadata` (`application/json`) — Adds, updates, or deletes (when value is `null`) custom metadata keys without re-uploading the object (`200 OK` / `400 Bad Request` / `404 Not Found` / `409 Conflict`).
+- `DELETE /api/v1/objects/{objectId}` — Deletes the object metadata and removes all stored chunk replicas from `UP` workers (queueing deferred deletions in `pending_deletions` for any `DOWN` workers) (`204 No Content` / `404 Not Found` / `409 Conflict`).
+- `GET /api/v1/objects?page=0&size=20&sort=createdAt,desc` — Returns a paginated list of stored (`ACTIVE`) objects (`200 OK` / `400 Bad Request`).
 
 ### Cluster & Admin Endpoints (Controller `:8080`)
 - `GET /api/v1/cluster/workers` — List all registered workers (`UP` / `DOWN`, capacity, used/free bytes, chunk count, last heartbeat).

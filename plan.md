@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 5 (Replication RF = 2 & Repair Engine) — **Completed**. Next up: Phase 6 (Metadata Operations, Listing & Deletion).
+> **Status:** Phase 6 (Metadata Operations, Listing & Deletion) — **Completed**. Next up: Phase 7 (Worker Failure Handling & Rejoin Reconciliation).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -625,14 +625,14 @@ flowchart LR
 - [x] Tests: `ReplicationIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering 10 MiB / 10-chunk distinctness & even 4-worker distribution, `DOWN` worker grace period & re-replication to restore RF=2 on surviving workers, and in-place repair of `CORRUPTED` replicas)
 **Acceptance:** For a 10 MiB upload, each of 10 chunks has exactly 2 `HEALTHY` replicas on distinct workers and all 4 workers hold 5 replicas each; repair restores RF = 2; all 50 tests pass (`mvn -o verify`).
 
-### Phase 6 — Metadata Operations, Listing, Deletion
+### Phase 6 — Metadata Operations, Listing, Deletion ✅
 **Tasks:**
-- [ ] `GET /{id}/metadata` (system + custom + chunk/replica map)
-- [ ] `PATCH /{id}/metadata` merge semantics (D12), validation, `updated_at`
-- [ ] `GET /api/v1/objects` pagination & sorting
-- [ ] `DELETE /{id}` → delete replicas on workers; deferred deletes for DOWN workers (D15)
-- [ ] Tests: all status codes (200/204/400/404/409), PATCH does not touch chunk data, delete removes chunk files
-**Acceptance:** All 6 client APIs behave per §8.2.
+- [x] `GET /api/v1/objects/{id}/metadata` (system + custom metadata + ordered chunk/replica map & `ReplicationStatus`)
+- [x] `PATCH /api/v1/objects/{id}/metadata` merge semantics (D12: string adds/updates, `null` removes, omitted unchanged), validation, `updated_at`, zero worker chunk I/O
+- [x] `GET /api/v1/objects` pagination (`page`, `size`) & sorting (`createdAt`, `updatedAt`, `name`, `size`)
+- [x] `DELETE /api/v1/objects/{id}` → deletes replicas on `UP` workers and queues `pending_deletions` (`V4__pending_deletions.sql`) for `DOWN`/unreachable workers (D15); returns `204 No Content`
+- [x] Tests: `ObjectMetadataListDeleteIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering all status codes 200/204/400/404, confirming `PATCH` performs zero worker chunk PUT/GET calls, pagination & sorting, and deletion with both `UP` and `DOWN` workers)
+**Acceptance:** All 6 client APIs behave per §8.2; all 53 tests pass (`mvn -o verify`).
 
 ### Phase 7 — Worker Failure Handling
 **Tasks:**
@@ -726,7 +726,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] Each worker has its own named persistent volume (`worker1-data`..`worker4-data` in `docker-compose.yml`); data survives restarts
 - [x] No Kubernetes anywhere
 - [ ] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build` (backend stack defined in Phase 1; dashboard in Phase 9)
-- [ ] All 6 client APIs implemented with specified success codes
+- [x] All 6 client APIs implemented with specified success codes (`POST /api/v1/objects` → 201, `GET /api/v1/objects/{id}` → 200, `GET /api/v1/objects/{id}/metadata` → 200, `PATCH /api/v1/objects/{id}/metadata` → 200, `DELETE /api/v1/objects/{id}` → 204, `GET /api/v1/objects` → 200)
 - [x] All 6 internal APIs implemented (`POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `PUT/GET/DELETE /internal/chunks/{chunk_id}`, `GET /internal/workers/{worker_id}/chunks`)
 - [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
 - [x] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved (`Chunker` + `chunks.chunk_index`)
@@ -735,7 +735,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [ ] Worker failure detection; reads continue from replicas
 - [ ] Rejoin reconciliation (RF exactly 2 after restart)
 - [ ] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired
-- [ ] Custom metadata upload / retrieve / patch without re-upload
+- [x] Custom metadata upload / retrieve / patch without re-upload (`ObjectService` + `ObjectController`)
 - [ ] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events
 - [ ] Unit + integration + E2E tests passing
 - [ ] Demo scripts for all six §10 scenarios
@@ -753,4 +753,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-30 | 3 | Implemented Object Upload & Chunking (`POST /api/v1/objects`): Flyway `V3__objects_chunks_replicas.sql` (`objects`, `object_metadata`, `chunks`, `chunk_replicas`), JPA entities & repositories, streaming 1 MiB `Chunker` with per-chunk and whole-object SHA-256, `PlacementService` (least-loaded + rotating tie-break across `UP` workers, distinct workers per chunk, failover replacement), `ObjectService.uploadObject` (`UPLOADING`→`ACTIVE` lifecycle, custom metadata validation, automatic failover on single-worker write error, rollback/cleanup on failure), and `ObjectController`. All 43 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 4 | Implemented Object Download & Reconstruction (`GET /api/v1/objects/{objectId}`): pre-flight replica availability check (`prepareDownload`), ordered streaming chunk reconstruction (`streamDownload` via `StreamingResponseBody`), controller-side SHA-256 verification on read with automatic replica failover and corruption marking (`markReplicaCorrupted`), response headers (`Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, `X-Object-Checksum-SHA256`), and `ObjectDownloadIntegrationTest`. All 47 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 5 | Implemented Replication (RF = 2) & Repair Engine: parallel virtual-thread dual-write on upload, `ReplicationStatus`/`ClusterStatusInfo`/`RepairResultInfo` DTOs, `ReplicationService` (cluster status evaluation, under-replication detection with `reReplicationGracePeriod`, controller-mediated re-replication to distinct `UP` workers, and in-place overwrite repair of `CORRUPTED` replicas), `RepairScheduler`, `GET /api/v1/cluster/status`, `POST /api/v1/admin/replication/repair`, and `ReplicationIntegrationTest`. All 50 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 6 | Implemented Metadata Operations, Listing & Deletion: `ChunkReplicaInfo`/`ChunkMetadataInfo`/`ObjectMetadataResponse`/`ObjectListPage` DTOs, Flyway `V4__pending_deletions.sql` (`PendingDeletionEntity`), `GET /api/v1/objects/{id}/metadata`, `PATCH /api/v1/objects/{id}/metadata` (JSON Merge Patch without re-uploading data), `GET /api/v1/objects` (pagination & sorting), `DELETE /api/v1/objects/{id}` (`204 No Content`, immediate worker chunk deletion + deferred deletion queue for `DOWN` workers), and `ObjectMetadataListDeleteIntegrationTest`. All 53 tests pass (`mvn -o verify`). |
 
