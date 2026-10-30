@@ -14,6 +14,8 @@ public interface ChunkReplicaRepository extends JpaRepository<ChunkReplicaEntity
 
     List<ChunkReplicaEntity> findByWorkerId(String workerId);
 
+    java.util.Optional<ChunkReplicaEntity> findByChunkIdAndWorkerId(String chunkId, String workerId);
+
     void deleteByChunkIdIn(Collection<String> chunkIds);
 }
 

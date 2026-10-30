@@ -5,12 +5,14 @@ import com.objectstore.common.dto.HeartbeatRequest;
 import com.objectstore.common.dto.HeartbeatResponse;
 import com.objectstore.common.dto.RegisterWorkerRequest;
 import com.objectstore.common.dto.RegisterWorkerResponse;
+import com.objectstore.common.dto.ReplicaState;
 import com.objectstore.common.dto.WorkerNodeInfo;
 import com.objectstore.common.dto.WorkerStatus;
 import com.objectstore.common.error.ApiException;
 import com.objectstore.common.error.ErrorCode;
 import com.objectstore.controller.config.ControllerProperties;
 import com.objectstore.controller.domain.WorkerEntity;
+import com.objectstore.controller.repository.ChunkReplicaRepository;
 import com.objectstore.controller.repository.WorkerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +37,18 @@ public class WorkerRegistryService {
     private static final long DEFAULT_HEARTBEAT_INTERVAL_MS = 3000L;
 
     private final WorkerRepository workerRepository;
+    private final ChunkReplicaRepository replicaRepository;
     private final EventService eventService;
     private final ReconciliationService reconciliationService;
     private final ControllerProperties properties;
 
     public WorkerRegistryService(WorkerRepository workerRepository,
+                                 ChunkReplicaRepository replicaRepository,
                                  EventService eventService,
                                  ReconciliationService reconciliationService,
                                  ControllerProperties properties) {
         this.workerRepository = workerRepository;
+        this.replicaRepository = replicaRepository;
         this.eventService = eventService;
         this.reconciliationService = reconciliationService;
         this.properties = properties;
@@ -138,8 +143,21 @@ public class WorkerRegistryService {
 
         for (String corruptChunkId : request.corruptChunkIds()) {
             if (corruptChunkId != null && !corruptChunkId.isBlank()) {
-                eventService.record(EventService.CHUNK_CORRUPTED, EventSeverity.WARN, null, corruptChunkId, workerId,
-                        "Worker " + workerId + " reported corrupted chunk " + corruptChunkId + " via heartbeat");
+                String trimmedId = corruptChunkId.trim();
+                replicaRepository.findByChunkIdAndWorkerId(trimmedId, workerId).ifPresent(replica -> {
+                    if (replica.getState() != ReplicaState.CORRUPTED) {
+                        replica.setState(ReplicaState.CORRUPTED);
+                        replicaRepository.save(replica);
+                        eventService.record(EventService.CHUNK_CORRUPTED, EventSeverity.WARN,
+                                null, trimmedId, workerId,
+                                "Worker " + workerId + " reported corrupted chunk " + trimmedId + " via heartbeat");
+                    }
+                });
+                if (replicaRepository.findByChunkIdAndWorkerId(trimmedId, workerId).isEmpty()) {
+                    eventService.record(EventService.CHUNK_CORRUPTED, EventSeverity.WARN,
+                            null, trimmedId, workerId,
+                            "Worker " + workerId + " reported corrupted chunk " + trimmedId + " via heartbeat");
+                }
             }
         }
 

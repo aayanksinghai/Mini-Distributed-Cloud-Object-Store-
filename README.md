@@ -16,7 +16,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 - **Phase 5 — Replication (RF = 2) & Repair Engine:** Completed
 - **Phase 6 — Metadata Operations, Listing & Deletion:** Completed
 - **Phase 7 — Worker Failure Handling & Rejoin Reconciliation:** Completed
-- **Phase 8 — Data Integrity Verification & Recovery:** Pending
+- **Phase 8 — Data Integrity Verification & Recovery:** Completed
+- **Phase 9 — Dashboard Integration:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -109,7 +110,7 @@ docker-compose down
 
 ---
 
-## Implemented Endpoints (Phases 2–7)
+## Implemented Endpoints (Phases 2–8)
 
 ### Client Object API (Controller `:8080`)
 - `POST /api/v1/objects` (`multipart/form-data`: required `file`, optional JSON string `metadata`) — Splits the uploaded object into 1 MiB chunks, computes SHA-256 checksums, places 2 replicas of each chunk in parallel on distinct `UP` workers, and returns `201 Created` with `ObjectInfo`.
@@ -124,15 +125,18 @@ docker-compose down
 - `GET /api/v1/cluster/status` — Cluster-wide summary: workers `UP`/`DOWN`, active objects, total chunks, healthy (`RF >= 2`), under-replicated (`1 <= RF < 2`), unavailable (`RF == 0`), and corrupted replica counts.
 - `POST /api/v1/admin/replication/repair` — Trigger immediate controller-mediated replication repair (bypasses `reReplicationGracePeriod`) to copy under-replicated chunks to distinct `UP` workers and overwrite `CORRUPTED` replicas from verified healthy copies.
 - `POST /api/v1/admin/workers/{workerId}/reconcile` — Reconcile a worker's on-disk chunk inventory against controller metadata (executes queued `pending_deletions`, deletes orphan chunks, re-adopts valid replicas, removes missing replicas, and trims surplus replicas so every chunk has `RF = 2`).
+- `POST /api/v1/admin/integrity/scrub[?objectId=<uuid>&repair=true]` — Verify SHA-256 checksums of all stored chunk replicas (or those of a single object) across `UP` workers, mark corrupted replicas as `CORRUPTED`, and automatically overwrite/repair them from valid replicas.
+- `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt` — Proxy opt-in demo corruption request to a worker (when `WORKER_DEBUG_ENDPOINTS=true`).
 - `GET /api/v1/admin/events?since={id}&limit=100` — Inspect cluster and storage lifecycle events (`WORKER_REGISTERED`, `WORKER_UP`, `WORKER_DOWN`, `UNDER_REPLICATED`, `OBJECT_UPLOADED`, `OBJECT_METADATA_UPDATED`, `OBJECT_DELETED`, `CHUNK_CORRUPTED`, `CHUNK_REPAIRED`, `RF_RESTORED`, `WORKER_RECONCILED`).
 
 ### Internal Worker Endpoints (`X-Internal-Token` required)
 - `POST /internal/workers/register` (Controller) — Register a worker node and automatically reconcile its on-disk chunks on rejoin (`201 Created` / `200 OK` / `409 Conflict`).
-- `POST /internal/workers/heartbeat` (Controller) — Report worker liveness and storage metrics (`200 OK` / `404 Not Found`).
+- `POST /internal/workers/heartbeat` (Controller) — Report worker liveness, storage metrics, and any `corruptChunkIds` discovered by the background `Scrubber` (`200 OK` / `404 Not Found`).
 - `PUT /internal/chunks/{chunkId}[?overwrite=true]` (Worker) — Atomically store a chunk on disk after verifying `X-Chunk-Checksum` (`201 Created` / `200 OK` / `400 Bad Request` / `409 Conflict`).
 - `GET /internal/chunks/{chunkId}` (Worker) — Retrieve a chunk after verifying its on-disk SHA-256 (`200 OK` / `404 Not Found` / `409 CHUNK_CORRUPTED`).
 - `DELETE /internal/chunks/{chunkId}` (Worker) — Delete a stored chunk (`204 No Content` / `404 Not Found`).
 - `GET /internal/workers/{workerId}/chunks[?verify=true]` (Worker & Controller) — List chunks stored by a worker, optionally re-verifying SHA-256 checksums on disk; on the Controller side, also includes the reconciliation diff (`expectedChunkIds`, `missingChunkIds`, `orphanChunkIds`, `corruptChunkIds`).
+- `POST /internal/debug/chunks/{chunkId}/corrupt` (Worker, opt-in via `WORKER_DEBUG_ENDPOINTS=true`) — Intentionally flip bytes in a stored chunk file on disk for data-integrity demonstrations.
 
 ---
 

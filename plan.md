@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 7 (Worker Failure Handling & Rejoin Reconciliation) — **Completed**. Next up: Phase 8 (Data Integrity Verification & Recovery).
+> **Status:** Phase 8 (Data Integrity Verification & Recovery) — **Completed**. Next up: Phase 9 (Dashboard Integration).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -644,16 +644,16 @@ flowchart LR
 - [x] Tests: `WorkerFailureAndReconciliationIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering worker DOWN replica state transition to `UNAVAILABLE`, continued byte-identical download from surviving replicas, fast rejoin re-adoption within grace period, full failure + re-replication + deferred deletion while DOWN + rejoin reconciliation trimming surplus 3rd copies to exact RF = 2, and `GET /internal/workers/{id}/chunks` inventory diff)
 **Acceptance:** Worker failure, read failover, re-replication, and rejoin reconciliation verified end-to-end; all 56 tests pass (`mvn -o verify`).
 
-### Phase 8 — Data Integrity Verification & Recovery
+### Phase 8 — Data Integrity Verification & Recovery ✅
 **Tasks:**
-- [ ] Worker verify-on-read → 409 `CHUNK_CORRUPTED`
-- [ ] Controller verify-on-receive; mark `CORRUPTED`; serve from other replica
-- [ ] Repair corrupt replica via overwrite from valid copy
-- [ ] Worker `Scrubber` + heartbeat reporting; `POST /api/v1/admin/integrity/scrub`
-- [ ] `scripts/demo/corrupt-chunk.sh`; optional debug endpoint (D10)
-- [ ] All-replicas-corrupt → 503, never corrupt bytes
-- [ ] Tests: unit (verifier), integration (corrupt stub response), E2E (flip bytes on disk → download still matches original → replica repaired → scrub clean)
-**Acceptance:** demo scenario §14.6 passes end-to-end.
+- [x] Worker verify-on-read → 409 `CHUNK_CORRUPTED` (`ChunkStore.get` + `ChunkController.getChunk` recording corrupt chunk in `Scrubber`)
+- [x] Controller verify-on-receive; mark `CORRUPTED`; serve from other replica (`ObjectService.fetchVerifiedChunkWithFailover`)
+- [x] Repair corrupt replica via overwrite from valid copy (`ReplicationService.overwriteCorruptedReplica`)
+- [x] Worker `Scrubber` + heartbeat reporting (`Scrubber`, `HeartbeatScheduler`, `WorkerRegistryService.heartbeat`); `POST /api/v1/admin/integrity/scrub` (`IntegrityService.scrub`, `ScrubResultInfo`)
+- [x] `scripts/demo/corrupt-chunk.sh`; optional debug endpoint (`DebugController` at `POST /internal/debug/chunks/{id}/corrupt` + controller proxy `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt`, D10)
+- [x] All-replicas-corrupt → 503 `CHUNK_UNAVAILABLE`, never corrupt bytes (`ObjectService.prepareDownload`)
+- [x] Tests: `ScrubberAndDebugControllerTest` (worker scrub, debug corruption, 409 on read, overwrite recovery) and `DataIntegrityAndRecoveryIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering corruption detection on read + failover + overwrite repair, proactive `POST /api/v1/admin/integrity/scrub` bit-rot detection & auto-repair, heartbeat `corruptChunkIds` reporting, and 503 when all replicas are corrupted)
+**Acceptance:** Data integrity verification and recovery verified end-to-end; all 60 tests pass (`mvn -o verify`).
 
 ### Phase 9 — Dashboard Integration
 **Pages / features:**
@@ -734,7 +734,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] Under-replication detection + automatic restoration (`ReplicationService` + `RepairScheduler` + `POST /api/v1/admin/replication/repair`)
 - [x] Worker failure detection; reads continue from replicas (`HeartbeatMonitor` + `WorkerRegistryService` + `ObjectService` failover)
 - [x] Rejoin reconciliation (RF exactly 2 after restart; `ReconciliationService`)
-- [ ] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired
+- [x] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired (`ChunkStore`, `Scrubber`, `IntegrityService`, `ReplicationService`)
 - [x] Custom metadata upload / retrieve / patch without re-upload (`ObjectService` + `ObjectController`)
 - [ ] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events
 - [ ] Unit + integration + E2E tests passing
@@ -755,4 +755,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-31 | 5 | Implemented Replication (RF = 2) & Repair Engine: parallel virtual-thread dual-write on upload, `ReplicationStatus`/`ClusterStatusInfo`/`RepairResultInfo` DTOs, `ReplicationService` (cluster status evaluation, under-replication detection with `reReplicationGracePeriod`, controller-mediated re-replication to distinct `UP` workers, and in-place overwrite repair of `CORRUPTED` replicas), `RepairScheduler`, `GET /api/v1/cluster/status`, `POST /api/v1/admin/replication/repair`, and `ReplicationIntegrationTest`. All 50 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 6 | Implemented Metadata Operations, Listing & Deletion: `ChunkReplicaInfo`/`ChunkMetadataInfo`/`ObjectMetadataResponse`/`ObjectListPage` DTOs, Flyway `V4__pending_deletions.sql` (`PendingDeletionEntity`), `GET /api/v1/objects/{id}/metadata`, `PATCH /api/v1/objects/{id}/metadata` (JSON Merge Patch without re-uploading data), `GET /api/v1/objects` (pagination & sorting), `DELETE /api/v1/objects/{id}` (`204 No Content`, immediate worker chunk deletion + deferred deletion queue for `DOWN` workers), and `ObjectMetadataListDeleteIntegrationTest`. All 53 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 7 | Implemented Worker Failure Handling & Rejoin Reconciliation: `ReconciliationResultInfo` and enriched `WorkerChunksResponse` (with `expectedChunkIds`, `missingChunkIds`, `orphanChunkIds`, `corruptChunkIds`), `ReconciliationService` (`handleWorkerDown` marking replicas `UNAVAILABLE` + recording `UNDER_REPLICATED` events, `reconcileWorker` executing `pending_deletions`, garbage-collecting orphans, re-adopting valid replicas, removing missing replicas, and trimming surplus 3rd copies back to exact `RF = 2`, plus `getWorkerChunksWithDiff`), wired into `WorkerRegistryService`, `InternalWorkerController`, and `ClusterController` (`POST /api/v1/admin/workers/{workerId}/reconcile`), and verified via `WorkerFailureAndReconciliationIntegrationTest`. All 56 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 8 | Implemented Data Integrity Verification & Recovery: `ScrubResultInfo` DTO, worker background `Scrubber` + heartbeat reporting (`corruptChunkIds` in `HeartbeatScheduler` -> `WorkerRegistryService.heartbeat` marking replicas `CORRUPTED`), opt-in worker `DebugController` (`POST /internal/debug/chunks/{id}/corrupt` gated by `WORKER_DEBUG_ENDPOINTS`), controller `IntegrityService` (`POST /api/v1/admin/integrity/scrub` and `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt`), `scripts/demo/corrupt-chunk.sh`, pre-flight first-chunk verification in `ObjectService.prepareDownload` so all-replicas-corrupt returns clean `503 CHUNK_UNAVAILABLE`, plus `ScrubberAndDebugControllerTest` and `DataIntegrityAndRecoveryIntegrationTest`. All 60 tests pass (`mvn -o verify`). |
 

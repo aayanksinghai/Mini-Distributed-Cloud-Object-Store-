@@ -229,7 +229,7 @@ public class ObjectService {
 
         List<ChunkEntity> chunks = chunkRepository.findByObjectIdOrderByChunkIndexAsc(objectId);
         if (chunks.isEmpty()) {
-            return new PreparedDownload(object, List.of());
+            return new PreparedDownload(object, List.of(), null);
         }
 
         List<String> chunkIds = chunks.stream().map(ChunkEntity::getId).toList();
@@ -260,7 +260,11 @@ public class ObjectService {
                     null);
         }
 
-        return new PreparedDownload(object, chunks);
+        // Pre-fetch and verify the first chunk before HTTP 200 headers are committed so that if all replicas
+        // of the first chunk fail or are corrupted, the client receives a clean 503 JSON error response.
+        byte[] firstChunkBytes = fetchVerifiedChunkWithFailover(objectId, chunks.getFirst());
+
+        return new PreparedDownload(object, chunks, firstChunkBytes);
     }
 
     /**
@@ -269,8 +273,11 @@ public class ObjectService {
      * if a worker fails or returns corrupted data.
      */
     public void streamDownload(PreparedDownload prepared, OutputStream outputStream) throws IOException {
-        for (ChunkEntity chunk : prepared.chunks()) {
-            byte[] verifiedBytes = fetchVerifiedChunkWithFailover(prepared.object().getId(), chunk);
+        List<ChunkEntity> chunks = prepared.chunks();
+        for (int i = 0; i < chunks.size(); i++) {
+            byte[] verifiedBytes = (i == 0 && prepared.prefetchedFirstChunk() != null)
+                    ? prepared.prefetchedFirstChunk()
+                    : fetchVerifiedChunkWithFailover(prepared.object().getId(), chunks.get(i));
             outputStream.write(verifiedBytes);
         }
         outputStream.flush();
@@ -866,7 +873,7 @@ public class ObjectService {
         return rawContentType.trim();
     }
 
-    public record PreparedDownload(StoredObjectEntity object, List<ChunkEntity> chunks) {
+    public record PreparedDownload(StoredObjectEntity object, List<ChunkEntity> chunks, byte[] prefetchedFirstChunk) {
     }
 
     private record CandidateReplica(ChunkReplicaEntity replica, WorkerEntity worker) {

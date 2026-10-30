@@ -6,9 +6,11 @@ import com.objectstore.common.error.ApiException;
 import com.objectstore.common.error.ErrorCode;
 import com.objectstore.common.http.InternalHeaders;
 import com.objectstore.worker.config.WorkerProperties;
+import com.objectstore.worker.integrity.Scrubber;
 import com.objectstore.worker.storage.ChunkMetadata;
 import com.objectstore.worker.storage.ChunkStore;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +35,17 @@ public class ChunkController {
 
     private final ChunkStore chunkStore;
     private final WorkerProperties workerProperties;
+    private final Scrubber scrubber;
 
-    public ChunkController(ChunkStore chunkStore, WorkerProperties workerProperties) {
+    @Autowired
+    public ChunkController(ChunkStore chunkStore, WorkerProperties workerProperties, Scrubber scrubber) {
         this.chunkStore = chunkStore;
         this.workerProperties = workerProperties;
+        this.scrubber = scrubber;
+    }
+
+    public ChunkController(ChunkStore chunkStore, WorkerProperties workerProperties) {
+        this(chunkStore, workerProperties, null);
     }
 
     @PutMapping(value = "/internal/chunks/{chunkId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,6 +60,9 @@ public class ChunkController {
         try (InputStream body = request.getInputStream()) {
             ChunkStore.WriteResult writeResult = chunkStore.put(
                     chunkId, body, expectedChecksum, objectId, chunkIndex, overwrite);
+            if (scrubber != null) {
+                scrubber.clearCorruptChunk(chunkId);
+            }
             ChunkMetadata meta = writeResult.metadata();
             StoredChunkInfo dto = new StoredChunkInfo(
                     meta.chunkId(),
@@ -69,17 +81,27 @@ public class ChunkController {
 
     @GetMapping(value = "/internal/chunks/{chunkId}")
     public ResponseEntity<byte[]> getChunk(@PathVariable String chunkId) {
-        ChunkStore.ReadResult result = chunkStore.get(chunkId);
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .contentLength(result.data().length)
-                .header(InternalHeaders.CHUNK_CHECKSUM, result.metadata().sha256())
-                .body(result.data());
+        try {
+            ChunkStore.ReadResult result = chunkStore.get(chunkId);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .contentLength(result.data().length)
+                    .header(InternalHeaders.CHUNK_CHECKSUM, result.metadata().sha256())
+                    .body(result.data());
+        } catch (ApiException e) {
+            if (scrubber != null && ErrorCode.CHUNK_CORRUPTED.equals(e.getCode())) {
+                scrubber.recordCorruptChunk(chunkId);
+            }
+            throw e;
+        }
     }
 
     @DeleteMapping(value = "/internal/chunks/{chunkId}")
     public ResponseEntity<Void> deleteChunk(@PathVariable String chunkId) {
         chunkStore.delete(chunkId);
+        if (scrubber != null) {
+            scrubber.clearCorruptChunk(chunkId);
+        }
         return ResponseEntity.noContent().build();
     }
 

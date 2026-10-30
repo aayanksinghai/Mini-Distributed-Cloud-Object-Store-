@@ -108,6 +108,23 @@ public class WorkerClient {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> corruptChunkOnWorker(String workerId, String workerBaseUrl, String chunkId) {
+        try {
+            return restClient.post()
+                    .uri(workerBaseUrl + "/internal/debug/chunks/{chunkId}/corrupt", chunkId)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .body(Map.class);
+        } catch (HttpStatusCodeException e) {
+            throw translateWorkerHttpError(workerId, "debug corrupt chunk " + chunkId, e);
+        } catch (RestClientException e) {
+            throw new ApiException(503, ErrorCode.WORKER_UNAVAILABLE,
+                    "Failed to reach worker '" + workerId + "' during debug corrupt chunk " + chunkId + ": " + e.getMessage(),
+                    Map.of("workerId", workerId, "chunkId", chunkId), e);
+        }
+    }
+
     private static ApiException translateWorkerHttpError(String workerId, String action, HttpStatusCodeException e) {
         int status = e.getStatusCode().value();
         String code = switch (status) {
