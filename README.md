@@ -13,7 +13,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 - **Phase 2 — Controller ↔ Worker Communication:** Completed
 - **Phase 3 — Object Upload & Chunking:** Completed
 - **Phase 4 — Download & Reconstruction:** Completed
-- **Phase 5 — Replication (RF = 2) & Repair Engine:** Pending
+- **Phase 5 — Replication (RF = 2) & Repair Engine:** Completed
+- **Phase 6 — Metadata Operations, Listing & Deletion:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -106,15 +107,17 @@ docker-compose down
 
 ---
 
-## Implemented Endpoints (Phases 2–4)
+## Implemented Endpoints (Phases 2–5)
 
 ### Client Object API (Controller `:8080`)
-- `POST /api/v1/objects` (`multipart/form-data`: required `file`, optional JSON string `metadata`) — Splits the uploaded object into 1 MiB chunks, computes SHA-256 checksums, places 2 replicas of each chunk on distinct `UP` workers, and returns `201 Created` with `ObjectInfo`.
+- `POST /api/v1/objects` (`multipart/form-data`: required `file`, optional JSON string `metadata`) — Splits the uploaded object into 1 MiB chunks, computes SHA-256 checksums, places 2 replicas of each chunk in parallel on distinct `UP` workers, and returns `201 Created` with `ObjectInfo`.
 - `GET /api/v1/objects/{objectId}` — Streams the complete reconstructed object in chunk order with its original `Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, and `X-Object-Checksum-SHA256` (`200 OK` / `404 Not Found` / `409 Conflict` / `503 Service Unavailable`). Verifies each chunk's SHA-256 on read and transparently fails over to surviving replicas if a worker is down or a replica is corrupted.
 
 ### Cluster & Admin Endpoints (Controller `:8080`)
 - `GET /api/v1/cluster/workers` — List all registered workers (`UP` / `DOWN`, capacity, used/free bytes, chunk count, last heartbeat).
-- `GET /api/v1/admin/events?since={id}&limit=100` — Inspect cluster and storage lifecycle events (`WORKER_REGISTERED`, `WORKER_UP`, `WORKER_DOWN`, `CHUNK_CORRUPTED`).
+- `GET /api/v1/cluster/status` — Cluster-wide summary: workers `UP`/`DOWN`, active objects, total chunks, healthy (`RF >= 2`), under-replicated (`1 <= RF < 2`), unavailable (`RF == 0`), and corrupted replica counts.
+- `POST /api/v1/admin/replication/repair` — Trigger immediate controller-mediated replication repair (bypasses `reReplicationGracePeriod`) to copy under-replicated chunks to distinct `UP` workers and overwrite `CORRUPTED` replicas from verified healthy copies.
+- `GET /api/v1/admin/events?since={id}&limit=100` — Inspect cluster and storage lifecycle events (`WORKER_REGISTERED`, `WORKER_UP`, `WORKER_DOWN`, `OBJECT_UPLOADED`, `CHUNK_CORRUPTED`, `CHUNK_REPAIRED`, `RF_RESTORED`).
 
 ### Internal Worker Endpoints (`X-Internal-Token` required)
 - `POST /internal/workers/register` (Controller) — Register a worker node (`201 Created` / `200 OK` / `409 Conflict`).

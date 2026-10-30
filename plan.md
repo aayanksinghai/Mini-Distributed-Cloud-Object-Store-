@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 4 (Download & Reconstruction) — **Completed**. Next up: Phase 5 (Replication RF = 2 & Repair Engine).
+> **Status:** Phase 5 (Replication RF = 2 & Repair Engine) — **Completed**. Next up: Phase 6 (Metadata Operations, Listing & Deletion).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -615,15 +615,15 @@ flowchart LR
 - [x] Tests: `ObjectDownloadIntegrationTest` (4 full HTTP + DB + 4-stub-worker tests covering ~3.2 MiB 4-chunk binary round-trip SHA-256 equality, 0-byte empty file download, transparent failover when a worker is `DOWN` or returns corrupted bytes while marking the bad replica `CORRUPTED`, and 404/400/409/503 error paths)
 **Acceptance:** `sha256sum original == sha256sum downloaded` for all test files; all 47 tests pass (`mvn -o verify`).
 
-### Phase 5 — Replication (RF = 2)
+### Phase 5 — Replication (RF = 2) ✅
 **Objective:** every chunk has 2 replicas on different workers; replication status is observable; repair engine exists.
 **Tasks:**
-- [ ] Parallel dual-write with replacement target on single-replica failure
-- [ ] Replica state tracking; `replicationStatus` per chunk/object
-- [ ] `ReplicationService`: find under-replicated chunks → copy from healthy replica to new distinct worker (controller-mediated, D11)
-- [ ] `POST /api/v1/admin/replication/repair`, `GET /api/v1/cluster/status`
-- [ ] Tests: distinctness invariant (property-style over many chunks), spread across 4 workers, repair restores RF in integration test
-**Acceptance:** for a 10 MB upload, each of 10 chunks has exactly 2 HEALTHY replicas on distinct workers, all 4 workers used.
+- [x] Parallel dual-write (`Executors.newVirtualThreadPerTaskExecutor()`) with replacement target on single-replica failure
+- [x] Replica state tracking; `ReplicationStatus` (`HEALTHY`, `DEGRADED`, `UNAVAILABLE`) per chunk/cluster (`ClusterStatusInfo`, `RepairResultInfo`)
+- [x] `ReplicationService`: find under-replicated and corrupted chunks → copy verified bytes from a healthy replica to a new distinct `UP` worker or overwrite a corrupted replica in-place (controller-mediated, D11), respecting `reReplicationGracePeriod` on scheduled runs
+- [x] `POST /api/v1/admin/replication/repair`, `GET /api/v1/cluster/status`, and background `RepairScheduler`
+- [x] Tests: `ReplicationIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering 10 MiB / 10-chunk distinctness & even 4-worker distribution, `DOWN` worker grace period & re-replication to restore RF=2 on surviving workers, and in-place repair of `CORRUPTED` replicas)
+**Acceptance:** For a 10 MiB upload, each of 10 chunks has exactly 2 `HEALTHY` replicas on distinct workers and all 4 workers hold 5 replicas each; repair restores RF = 2; all 50 tests pass (`mvn -o verify`).
 
 ### Phase 6 — Metadata Operations, Listing, Deletion
 **Tasks:**
@@ -730,8 +730,8 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] All 6 internal APIs implemented (`POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `PUT/GET/DELETE /internal/chunks/{chunk_id}`, `GET /internal/workers/{worker_id}/chunks`)
 - [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
 - [x] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved (`Chunker` + `chunks.chunk_index`)
-- [ ] RF = 2 on distinct workers; distribution across all workers (write path implemented in Phase 3; repair & cluster status in Phase 5)
-- [ ] Under-replication detection + automatic restoration
+- [x] RF = 2 on distinct workers; distribution across all workers (`PlacementService` + parallel virtual-thread dual-write)
+- [x] Under-replication detection + automatic restoration (`ReplicationService` + `RepairScheduler` + `POST /api/v1/admin/replication/repair`)
 - [ ] Worker failure detection; reads continue from replicas
 - [ ] Rejoin reconciliation (RF exactly 2 after restart)
 - [ ] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired
@@ -752,4 +752,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-30 | 2 | Implemented Controller ↔ Worker communication: `Sha256` hashing utility, `InternalTokenFilter` (`X-Internal-Token`), worker `ChunkStore` (atomic sharded filesystem storage + JSON sidecar + SHA-256 verification on write and read), `ChunkController` (`PUT/GET/DELETE /internal/chunks/{id}`, `GET /internal/workers/{id}/chunks`), worker `RegistrationClient` + `HeartbeatScheduler` (with auto re-register on 404), Flyway `V2__workers_and_events.sql`, controller `WorkerRegistryService` + `HeartbeatMonitor` + `EventService` + `WorkerClient`, `InternalWorkerController`, and `ClusterController` (`GET /api/v1/cluster/workers`, `GET /api/v1/admin/events`). All 33 tests pass (`mvn -o verify`). |
 | 2026-10-30 | 3 | Implemented Object Upload & Chunking (`POST /api/v1/objects`): Flyway `V3__objects_chunks_replicas.sql` (`objects`, `object_metadata`, `chunks`, `chunk_replicas`), JPA entities & repositories, streaming 1 MiB `Chunker` with per-chunk and whole-object SHA-256, `PlacementService` (least-loaded + rotating tie-break across `UP` workers, distinct workers per chunk, failover replacement), `ObjectService.uploadObject` (`UPLOADING`→`ACTIVE` lifecycle, custom metadata validation, automatic failover on single-worker write error, rollback/cleanup on failure), and `ObjectController`. All 43 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 4 | Implemented Object Download & Reconstruction (`GET /api/v1/objects/{objectId}`): pre-flight replica availability check (`prepareDownload`), ordered streaming chunk reconstruction (`streamDownload` via `StreamingResponseBody`), controller-side SHA-256 verification on read with automatic replica failover and corruption marking (`markReplicaCorrupted`), response headers (`Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, `X-Object-Checksum-SHA256`), and `ObjectDownloadIntegrationTest`. All 47 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 5 | Implemented Replication (RF = 2) & Repair Engine: parallel virtual-thread dual-write on upload, `ReplicationStatus`/`ClusterStatusInfo`/`RepairResultInfo` DTOs, `ReplicationService` (cluster status evaluation, under-replication detection with `reReplicationGracePeriod`, controller-mediated re-replication to distinct `UP` workers, and in-place overwrite repair of `CORRUPTED` replicas), `RepairScheduler`, `GET /api/v1/cluster/status`, `POST /api/v1/admin/replication/repair`, and `ReplicationIntegrationTest`. All 50 tests pass (`mvn -o verify`). |
 

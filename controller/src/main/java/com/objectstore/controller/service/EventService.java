@@ -30,6 +30,8 @@ public class EventService {
     public static final String CHUNK_CORRUPTED = "CHUNK_CORRUPTED";
     public static final String OBJECT_UPLOADED = "OBJECT_UPLOADED";
     public static final String OBJECT_UPLOAD_FAILED = "OBJECT_UPLOAD_FAILED";
+    public static final String CHUNK_REPAIRED = "CHUNK_REPAIRED";
+    public static final String RF_RESTORED = "RF_RESTORED";
 
     private final SystemEventRepository repository;
 

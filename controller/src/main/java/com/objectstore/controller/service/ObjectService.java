@@ -42,6 +42,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -143,7 +146,7 @@ public class ObjectService {
             }
         });
 
-        List<WrittenReplica> writtenReplicas = new ArrayList<>();
+        List<WrittenReplica> writtenReplicas = java.util.Collections.synchronizedList(new ArrayList<>());
         try (InputStream in = file.getInputStream()) {
             Chunker.ChunkingResult chunkingResult = chunker.split(objectId, in, slice -> {
                 List<WorkerEntity> confirmedWorkers = storeSliceWithFailover(objectId, slice, writtenReplicas);
@@ -328,7 +331,7 @@ public class ObjectService {
     }
 
     /**
-     * Writes a chunk slice to {@code replicationFactor} distinct {@code UP} workers.
+     * Writes a chunk slice in parallel to {@code replicationFactor} distinct {@code UP} workers.
      * If a target worker fails during the PUT, tries replacement {@code UP} workers not yet attempted.
      */
     private List<WorkerEntity> storeSliceWithFailover(UUID objectId,
@@ -337,13 +340,22 @@ public class ObjectService {
         int rf = placementService.getReplicationFactor();
         List<WorkerEntity> initialTargets = placementService.selectWorkersForChunk();
         Set<String> attemptedWorkerIds = new HashSet<>();
+        for (WorkerEntity target : initialTargets) {
+            attemptedWorkerIds.add(target.getId());
+        }
+
         List<WorkerEntity> confirmed = new ArrayList<>(rf);
         Exception lastFailure = null;
 
-        for (WorkerEntity target : initialTargets) {
-            attemptedWorkerIds.add(target.getId());
-            if (tryWriteReplica(objectId, slice, target, writtenReplicas)) {
-                confirmed.add(target);
+        try (ExecutorService vExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
+            List<CompletableFuture<Boolean>> futures = initialTargets.stream()
+                    .map(target -> CompletableFuture.supplyAsync(
+                            () -> tryWriteReplica(objectId, slice, target, writtenReplicas), vExecutor))
+                    .toList();
+            for (int i = 0; i < initialTargets.size(); i++) {
+                if (Boolean.TRUE.equals(futures.get(i).join())) {
+                    confirmed.add(initialTargets.get(i));
+                }
             }
         }
 
