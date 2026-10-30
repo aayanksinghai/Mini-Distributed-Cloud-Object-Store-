@@ -60,8 +60,13 @@ public abstract class AbstractApiExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_ERROR, "Request validation failed: " + ex.getMessage(), request, null);
     }
 
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ErrorResponse> handleMissingPart(MissingServletRequestPartException ex, HttpServletRequest request) {
+        String code = "file".equals(ex.getRequestPartName()) ? ErrorCode.MISSING_FILE : ErrorCode.VALIDATION_ERROR;
+        return build(HttpStatus.BAD_REQUEST, code, ex.getMessage(), request, null);
+    }
+
     @ExceptionHandler({
-            MissingServletRequestPartException.class,
             MissingServletRequestParameterException.class,
             MissingRequestHeaderException.class,
             MethodArgumentTypeMismatchException.class

@@ -28,6 +28,8 @@ public class EventService {
     public static final String WORKER_UP = "WORKER_UP";
     public static final String WORKER_DOWN = "WORKER_DOWN";
     public static final String CHUNK_CORRUPTED = "CHUNK_CORRUPTED";
+    public static final String OBJECT_UPLOADED = "OBJECT_UPLOADED";
+    public static final String OBJECT_UPLOAD_FAILED = "OBJECT_UPLOAD_FAILED";
 
     private final SystemEventRepository repository;
 

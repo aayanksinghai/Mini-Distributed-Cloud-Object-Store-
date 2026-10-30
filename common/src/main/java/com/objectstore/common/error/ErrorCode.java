@@ -29,6 +29,15 @@ public final class ErrorCode {
     public static final String CHUNK_CORRUPTED = "CHUNK_CORRUPTED";
     public static final String STORAGE_IO_ERROR = "STORAGE_IO_ERROR";
 
+    // Object lifecycle & placement codes
+    public static final String MISSING_FILE = "MISSING_FILE";
+    public static final String INVALID_METADATA = "INVALID_METADATA";
+    public static final String INSUFFICIENT_STORAGE_NODES = "INSUFFICIENT_STORAGE_NODES";
+    public static final String UPLOAD_FAILED = "UPLOAD_FAILED";
+    public static final String OBJECT_NOT_FOUND = "OBJECT_NOT_FOUND";
+    public static final String OBJECT_NOT_READY = "OBJECT_NOT_READY";
+    public static final String CHUNK_UNAVAILABLE = "CHUNK_UNAVAILABLE";
+
     private ErrorCode() {
     }
 }

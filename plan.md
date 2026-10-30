@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 2 (Controller ↔ Worker Communication) — **Completed**. Next up: Phase 3 (Object Upload & Chunking).
+> **Status:** Phase 3 (Object Upload & Chunking) — **Completed**. Next up: Phase 4 (Download & Reconstruction).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -594,17 +594,17 @@ flowchart LR
 - [x] Tests: `Sha256Test` (4), `InternalTokenFilterTest` (3), `ChunkStoreTest` (5), `ChunkControllerTest` (1 full HTTP lifecycle), `RegistrationClientTest` (1), `WorkerRegistryAndCommunicationTest` (2 full Spring Boot + DB + HTTP tests covering 4-worker registration, heartbeat timeout `UP`→`DOWN`, rejoin `DOWN`→`UP`, and controller→worker chunk inventory & retrieval)
 **Acceptance:** All 33 unit and integration tests pass (`mvn -o verify`); all 6 internal APIs implemented and verified.
 
-### Phase 3 — Object Upload & Chunking
+### Phase 3 — Object Upload & Chunking ✅
 **Objective:** `POST /api/v1/objects` splits into 1 MiB chunks, computes checksums, stores via placement service.
 **Tasks:**
-- [ ] Schema: `objects`, `object_metadata`, `chunks`, `chunk_replicas`
-- [ ] `Chunker` (streaming, exact 1 MiB, final partial, empty file)
-- [ ] `PlacementService` (interface supports N replicas; Phase 3 writes with RF from config, distinct workers)
-- [ ] `ObjectService.upload` with `UPLOADING→ACTIVE` lifecycle & cleanup on failure (D14)
-- [ ] Multipart + optional `metadata` JSON validation → 400s
-- [ ] 503 when insufficient UP workers
-- [ ] Tests: Chunker boundaries (0 B, 1 B, 1 MiB−1, 1 MiB, 1 MiB+1, 5.3 MiB), placement uniqueness/spread, upload integration with WireMock workers, E2E upload of 5 MB file → chunk files appear across workers
-**Acceptance:** upload returns 201 with correct `chunkCount = ceil(size/1MiB)`; chunk files on worker volumes with correct sizes/hashes.
+- [x] Schema: `objects`, `object_metadata`, `chunks`, `chunk_replicas` (`V3__objects_chunks_replicas.sql`)
+- [x] `Chunker` (streaming, exact 1 MiB = 1,048,576 B, final partial chunk, empty file support, deterministic chunk IDs `{objectId}_{index:05d}`, per-chunk + whole-object SHA-256)
+- [x] `PlacementService` (least-loaded + rotating tie-break across `UP` workers, enforces distinct workers per chunk, replacement worker selection on write failure)
+- [x] `ObjectService.uploadObject` with `UPLOADING→ACTIVE` lifecycle & rollback/cleanup of written replicas on failure (D14)
+- [x] Multipart (`file` required) + optional `metadata` JSON validation → 400 (`MISSING_FILE`, `INVALID_METADATA`, `PAYLOAD_TOO_LARGE`)
+- [x] 503 (`INSUFFICIENT_STORAGE_NODES`) when fewer than `replicationFactor` (2) workers are `UP`
+- [x] Tests: `ChunkerTest` (2 tests covering 0 B, 1 B, 1 MiB−1, 1 MiB, 1 MiB+1, ~2.3 MiB), `PlacementServiceTest` (3 tests covering <2 workers 503, distinctness & even spread across 4 workers, replacement worker selection), `ObjectUploadIntegrationTest` (5 full HTTP + DB + stub-worker tests covering ~2.48 MiB multi-chunk upload with RF=2 across 4 workers, 0-byte upload, single-worker write failover, <2 UP workers 503, and 400 validation errors)
+**Acceptance:** Upload returns `201 Created` with `Location` header and `ObjectInfo` (`chunkCount = ceil(size / 1 MiB)`), storing 2 verified replicas of each chunk on distinct workers. All 43 tests pass (`mvn -o verify`).
 
 ### Phase 4 — Download & Reconstruction
 **Objective:** `GET /api/v1/objects/{id}` returns byte-identical object.
@@ -729,8 +729,8 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [ ] All 6 client APIs implemented with specified success codes
 - [x] All 6 internal APIs implemented (`POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `PUT/GET/DELETE /internal/chunks/{chunk_id}`, `GET /internal/workers/{worker_id}/chunks`)
 - [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
-- [ ] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved
-- [ ] RF = 2 on distinct workers; distribution across all workers
+- [x] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved (`Chunker` + `chunks.chunk_index`)
+- [ ] RF = 2 on distinct workers; distribution across all workers (write path implemented in Phase 3; repair & cluster status in Phase 5)
 - [ ] Under-replication detection + automatic restoration
 - [ ] Worker failure detection; reads continue from replicas
 - [ ] Rejoin reconciliation (RF exactly 2 after restart)
@@ -750,4 +750,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-30 | 0 | Requirements analysed, architecture & plan drafted. |
 | 2026-10-30 | 1 | Implemented multi-module Maven foundation (`common`, `controller`, `worker`), Spring Boot 3.5.7 + Java 21 configuration, uniform JSON error handling, Flyway baseline, worker `StorageDirectory` + health indicator, multi-stage Dockerfiles, `docker-compose.yml` (1 controller, 4 workers with named volumes, PostgreSQL 16), `.env.example`, `.gitignore`, `.dockerignore`, and `README.md`. All 16 unit/context tests pass (`mvn -o verify`). |
 | 2026-10-30 | 2 | Implemented Controller ↔ Worker communication: `Sha256` hashing utility, `InternalTokenFilter` (`X-Internal-Token`), worker `ChunkStore` (atomic sharded filesystem storage + JSON sidecar + SHA-256 verification on write and read), `ChunkController` (`PUT/GET/DELETE /internal/chunks/{id}`, `GET /internal/workers/{id}/chunks`), worker `RegistrationClient` + `HeartbeatScheduler` (with auto re-register on 404), Flyway `V2__workers_and_events.sql`, controller `WorkerRegistryService` + `HeartbeatMonitor` + `EventService` + `WorkerClient`, `InternalWorkerController`, and `ClusterController` (`GET /api/v1/cluster/workers`, `GET /api/v1/admin/events`). All 33 tests pass (`mvn -o verify`). |
+| 2026-10-30 | 3 | Implemented Object Upload & Chunking (`POST /api/v1/objects`): Flyway `V3__objects_chunks_replicas.sql` (`objects`, `object_metadata`, `chunks`, `chunk_replicas`), JPA entities & repositories, streaming 1 MiB `Chunker` with per-chunk and whole-object SHA-256, `PlacementService` (least-loaded + rotating tie-break across `UP` workers, distinct workers per chunk, failover replacement), `ObjectService.uploadObject` (`UPLOADING`→`ACTIVE` lifecycle, custom metadata validation, automatic failover on single-worker write error, rollback/cleanup on failure), and `ObjectController`. All 43 tests pass (`mvn -o verify`). |
 
