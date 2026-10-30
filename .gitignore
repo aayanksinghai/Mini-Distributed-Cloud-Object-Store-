@@ -1,0 +1,23 @@
+# Build output
+target/
+*.class
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Environment (secrets)
+.env
+
+# Dashboard (Phase 9)
+node_modules/
+dist/
+
+# OS
+.DS_Store
+

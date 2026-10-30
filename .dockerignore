@@ -1,0 +1,9 @@
+target/
+**/target/
+.git/
+node_modules/
+dashboard/
+*.md
+*.pdf
+.env
+

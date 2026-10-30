@@ -1,0 +1,46 @@
+server:
+  port: ${SERVER_PORT:8081}
+  shutdown: graceful
+
+spring:
+  application:
+    name: worker
+  threads:
+    virtual:
+      enabled: true
+  servlet:
+    multipart:
+      enabled: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+worker:
+  id: ${WORKER_ID:}
+  advertised-url: ${WORKER_ADVERTISED_URL:http://${WORKER_ID:localhost}:${SERVER_PORT:8081}}
+  controller-url: ${CONTROLLER_URL:http://controller:8080}
+  storage-dir: ${STORAGE_DIR:/data/chunks}
+  heartbeat-interval: ${HEARTBEAT_INTERVAL_MS:3000}ms
+  scrub-interval: ${SCRUB_INTERVAL_MS:300000}ms
+  debug-endpoints: ${WORKER_DEBUG_ENDPOINTS:false}
+  internal-api-token: ${INTERNAL_API_TOKEN:change-me-internal-token}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.objectstore: ${APP_LOG_LEVEL:INFO}
+  pattern:
+    level: "%5p [${WORKER_ID:worker}]"
+

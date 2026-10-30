@@ -1,0 +1,124 @@
+# Mini Distributed Cloud Object Store — local deployment (1 controller, 4 workers, PostgreSQL).
+# Start:  docker-compose up -d --build
+# Kubernetes is intentionally NOT used (coursework requirement).
+
+x-worker: &worker
+  build:
+    context: .
+    dockerfile: worker/Dockerfile
+  image: objectstore/worker:latest
+  restart: "no"
+  depends_on:
+    controller:
+      condition: service_healthy
+  networks: [objectstore-net]
+  environment: &worker-env
+    SERVER_PORT: 8081
+    CONTROLLER_URL: http://controller:8080
+    STORAGE_DIR: /data/chunks
+    HEARTBEAT_INTERVAL_MS: ${HEARTBEAT_INTERVAL_MS:-3000}
+    SCRUB_INTERVAL_MS: ${SCRUB_INTERVAL_MS:-300000}
+    WORKER_DEBUG_ENDPOINTS: ${WORKER_DEBUG_ENDPOINTS:-false}
+    INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-change-me-internal-token}
+    LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-objectstore}
+      POSTGRES_USER: ${POSTGRES_USER:-objectstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-objectstore}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks: [objectstore-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  controller:
+    build:
+      context: .
+      dockerfile: controller/Dockerfile
+    image: objectstore/controller:latest
+    container_name: controller
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${CONTROLLER_PORT:-8080}:8080"
+    networks: [objectstore-net]
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-objectstore}
+      DB_USER: ${POSTGRES_USER:-objectstore}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-objectstore}
+      CHUNK_SIZE_BYTES: 1048576
+      REPLICATION_FACTOR: 2
+      MAX_OBJECT_SIZE: ${MAX_OBJECT_SIZE:-1GB}
+      HEARTBEAT_TIMEOUT_MS: ${HEARTBEAT_TIMEOUT_MS:-10000}
+      HEARTBEAT_CHECK_INTERVAL_MS: ${HEARTBEAT_CHECK_INTERVAL_MS:-2000}
+      REREPLICATION_GRACE_PERIOD_MS: ${REREPLICATION_GRACE_PERIOD_MS:-30000}
+      REPAIR_INTERVAL_MS: ${REPAIR_INTERVAL_MS:-10000}
+      WORKER_REQUEST_TIMEOUT_MS: ${WORKER_REQUEST_TIMEOUT_MS:-5000}
+      INTERNAL_API_TOKEN: ${INTERNAL_API_TOKEN:-change-me-internal-token}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+  worker1:
+    <<: *worker
+    container_name: worker1
+    hostname: worker1
+    environment:
+      <<: *worker-env
+      WORKER_ID: worker1
+      WORKER_ADVERTISED_URL: http://worker1:8081
+    volumes:
+      - worker1-data:/data
+
+  worker2:
+    <<: *worker
+    container_name: worker2
+    hostname: worker2
+    environment:
+      <<: *worker-env
+      WORKER_ID: worker2
+      WORKER_ADVERTISED_URL: http://worker2:8081
+    volumes:
+      - worker2-data:/data
+
+  worker3:
+    <<: *worker
+    container_name: worker3
+    hostname: worker3
+    environment:
+      <<: *worker-env
+      WORKER_ID: worker3
+      WORKER_ADVERTISED_URL: http://worker3:8081
+    volumes:
+      - worker3-data:/data
+
+  worker4:
+    <<: *worker
+    container_name: worker4
+    hostname: worker4
+    environment:
+      <<: *worker-env
+      WORKER_ID: worker4
+      WORKER_ADVERTISED_URL: http://worker4:8081
+    volumes:
+      - worker4-data:/data
+
+networks:
+  objectstore-net:
+    name: objectstore-net
+
+volumes:
+  postgres-data:
+  worker1-data:
+  worker2-data:
+  worker3-data:
+  worker4-data:
+

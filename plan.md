@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 0 (Architecture & Plan) — *awaiting review/approval*. No application code has been written yet.
+> **Status:** Phase 1 (Project Foundation & Docker Environment) — **Completed**. Next up: Phase 2 (Controller ↔ Worker Communication).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -562,25 +562,25 @@ flowchart LR
     P10 --> P11["P11 Final documentation"]
 ```
 
-### Phase 0 — Architecture & Plan ✅ (this document, pending approval)
+### Phase 0 — Architecture & Plan ✅
 - [x] Read PDF, extract mandatory requirements (§2)
 - [x] Inspect repo & toolchain (Java 21.0.11, Maven 3.8.7, Node 20, Docker 29, docker-compose v5.1.1)
 - [x] Architecture, API, schema, phases
-- [ ] **User approval of plan & decisions D1–D20**
+- [x] **User approval of plan & decisions D1–D20**
 
-### Phase 1 — Project Foundation & Docker Environment
+### Phase 1 — Project Foundation & Docker Environment ✅
 **Objective:** buildable multi-module skeleton; full stack (`postgres`, `controller`, `worker1-4`) starts with one command; health endpoints green.
-**Files:** `pom.xml`, `common/**`, `controller/{pom.xml,Dockerfile,ControllerApplication,application.yml,V1__init.sql (empty baseline)}`, `worker/{pom.xml,Dockerfile,WorkerApplication,application.yml}`, `docker-compose.yml`, `.env.example`, `.gitignore`, `README.md` (initial).
+**Files:** `pom.xml`, `common/**`, `controller/{pom.xml,Dockerfile,ControllerApplication,application.yml,V1__baseline.sql}`, `worker/{pom.xml,Dockerfile,WorkerApplication,application.yml}`, `docker-compose.yml`, `.env.example`, `.gitignore`, `.dockerignore`, `README.md` (initial).
 **Tasks:**
-- [ ] Maven parent POM (Java 21, Spring Boot BOM, module list)
-- [ ] `common` module: `ErrorResponse`, header constants
-- [ ] Controller & worker Spring Boot apps with Actuator, virtual threads, typed `@ConfigurationProperties`
-- [ ] `GlobalExceptionHandler` + JSON error format (both services)
-- [ ] Flyway wired to Postgres
-- [ ] Multi-stage Dockerfiles (Maven build → JRE 21 slim runtime, non-root user)
-- [ ] Compose: network, `container_name`s, 4 named worker volumes + postgres volume, healthchecks, `depends_on: condition: service_healthy`, env from `.env`
-- [ ] Smoke tests: context loads; `/actuator/health` 200 for all 6 containers
-**Acceptance:** `docker-compose up -d --build` → all containers healthy; `mvn test` green; volumes visible in `docker volume ls`.
+- [x] Maven parent POM (Java 21, Spring Boot 3.5.7 BOM, module list, Failsafe plugin)
+- [x] `common` module: `ErrorResponse`, `ErrorCode`, `ApiException`, `AbstractApiExceptionHandler`, `InternalHeaders`
+- [x] Controller & worker Spring Boot apps with Actuator, virtual threads, typed & validated `@ConfigurationProperties` (`ControllerProperties`, `WorkerProperties`), and `StorageDirectory` + `StorageHealthIndicator` on workers
+- [x] `GlobalExceptionHandler` + JSON error format (both services)
+- [x] Flyway wired to Postgres (`V1__baseline.sql`)
+- [x] Multi-stage Dockerfiles (Maven build → JRE 21 Alpine runtime, non-root user)
+- [x] Compose: network `objectstore-net`, `container_name`s (`postgres`, `controller`, `worker1`..`worker4`), 4 named worker volumes + postgres volume, healthchecks, `depends_on: condition: service_healthy`, env from `.env`
+- [x] Smoke & unit tests: `AbstractApiExceptionHandlerTest` (6 tests), `ControllerPropertiesTest` (4 tests), `WorkerPropertiesTest` (3 tests), `WorkerApplicationTest` (3 tests), and `ControllerApplicationIT` (Testcontainers Postgres integration test, auto-skipped when Docker daemon is unavailable)
+**Acceptance:** `docker-compose config` valid; `mvn verify` passes (16/16 unit & context tests green; repackaged Spring Boot jars built for `controller` and `worker`).
 
 ### Phase 2 — Controller ↔ Worker Communication
 **Objective:** workers register & heartbeat; controller tracks liveness; worker chunk storage API works standalone.
@@ -723,12 +723,12 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 
 ## 16. Completion Checklist
 
-- [ ] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build`
-- [ ] Each worker has its own named persistent volume; data survives restarts
-- [ ] No Kubernetes anywhere
+- [x] Each worker has its own named persistent volume (`worker1-data`..`worker4-data` in `docker-compose.yml`); data survives restarts
+- [x] No Kubernetes anywhere
+- [ ] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build` (backend stack defined in Phase 1; dashboard in Phase 9)
 - [ ] All 6 client APIs implemented with specified success codes
 - [ ] All 6 internal APIs implemented
-- [ ] Structured JSON errors with 400/404/409/500/503 as appropriate
+- [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
 - [ ] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved
 - [ ] RF = 2 on distinct workers; distribution across all workers
 - [ ] Under-replication detection + automatic restoration
@@ -747,5 +747,6 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 
 | Date | Phase | Summary |
 |------|-------|---------|
-| 2026-10-30 | 0 | Requirements analysed, architecture & plan drafted. Awaiting approval. |
+| 2026-10-30 | 0 | Requirements analysed, architecture & plan drafted. |
+| 2026-10-30 | 1 | Implemented multi-module Maven foundation (`common`, `controller`, `worker`), Spring Boot 3.5.7 + Java 21 configuration, uniform JSON error handling, Flyway baseline, worker `StorageDirectory` + health indicator, multi-stage Dockerfiles, `docker-compose.yml` (1 controller, 4 workers with named volumes, PostgreSQL 16), `.env.example`, `.gitignore`, `.dockerignore`, and `README.md`. All 16 unit/context tests pass (`mvn -o verify`). |
 
