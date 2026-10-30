@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 3 (Object Upload & Chunking) — **Completed**. Next up: Phase 4 (Download & Reconstruction).
+> **Status:** Phase 4 (Download & Reconstruction) — **Completed**. Next up: Phase 5 (Replication RF = 2 & Repair Engine).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -606,14 +606,14 @@ flowchart LR
 - [x] Tests: `ChunkerTest` (2 tests covering 0 B, 1 B, 1 MiB−1, 1 MiB, 1 MiB+1, ~2.3 MiB), `PlacementServiceTest` (3 tests covering <2 workers 503, distinctness & even spread across 4 workers, replacement worker selection), `ObjectUploadIntegrationTest` (5 full HTTP + DB + stub-worker tests covering ~2.48 MiB multi-chunk upload with RF=2 across 4 workers, 0-byte upload, single-worker write failover, <2 UP workers 503, and 400 validation errors)
 **Acceptance:** Upload returns `201 Created` with `Location` header and `ObjectInfo` (`chunkCount = ceil(size / 1 MiB)`), storing 2 verified replicas of each chunk on distinct workers. All 43 tests pass (`mvn -o verify`).
 
-### Phase 4 — Download & Reconstruction
+### Phase 4 — Download & Reconstruction ✅
 **Objective:** `GET /api/v1/objects/{id}` returns byte-identical object.
 **Tasks:**
-- [ ] Streaming ordered reassembly with per-chunk verification
-- [ ] Pre-flight availability check (503), 404, 409 handling
-- [ ] Headers (Content-Type, Length, Disposition, ETag)
-- [ ] Tests: round-trip SHA-256 equality for text, image, binary random, empty, multi-chunk files; 404 path
-**Acceptance:** `sha256sum original == sha256sum downloaded` for all test files.
+- [x] Streaming ordered reassembly (`StreamingResponseBody`) with per-chunk SHA-256 verification and automatic failover across replicas
+- [x] Pre-flight availability check (`503 CHUNK_UNAVAILABLE` before sending 200 OK headers if any chunk has no healthy replica on an `UP` worker), `404 OBJECT_NOT_FOUND`, `409 OBJECT_NOT_READY`, `400 VALIDATION_ERROR` handling
+- [x] Headers (`Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, `X-Object-Checksum-SHA256`)
+- [x] Tests: `ObjectDownloadIntegrationTest` (4 full HTTP + DB + 4-stub-worker tests covering ~3.2 MiB 4-chunk binary round-trip SHA-256 equality, 0-byte empty file download, transparent failover when a worker is `DOWN` or returns corrupted bytes while marking the bad replica `CORRUPTED`, and 404/400/409/503 error paths)
+**Acceptance:** `sha256sum original == sha256sum downloaded` for all test files; all 47 tests pass (`mvn -o verify`).
 
 ### Phase 5 — Replication (RF = 2)
 **Objective:** every chunk has 2 replicas on different workers; replication status is observable; repair engine exists.
@@ -751,4 +751,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-30 | 1 | Implemented multi-module Maven foundation (`common`, `controller`, `worker`), Spring Boot 3.5.7 + Java 21 configuration, uniform JSON error handling, Flyway baseline, worker `StorageDirectory` + health indicator, multi-stage Dockerfiles, `docker-compose.yml` (1 controller, 4 workers with named volumes, PostgreSQL 16), `.env.example`, `.gitignore`, `.dockerignore`, and `README.md`. All 16 unit/context tests pass (`mvn -o verify`). |
 | 2026-10-30 | 2 | Implemented Controller ↔ Worker communication: `Sha256` hashing utility, `InternalTokenFilter` (`X-Internal-Token`), worker `ChunkStore` (atomic sharded filesystem storage + JSON sidecar + SHA-256 verification on write and read), `ChunkController` (`PUT/GET/DELETE /internal/chunks/{id}`, `GET /internal/workers/{id}/chunks`), worker `RegistrationClient` + `HeartbeatScheduler` (with auto re-register on 404), Flyway `V2__workers_and_events.sql`, controller `WorkerRegistryService` + `HeartbeatMonitor` + `EventService` + `WorkerClient`, `InternalWorkerController`, and `ClusterController` (`GET /api/v1/cluster/workers`, `GET /api/v1/admin/events`). All 33 tests pass (`mvn -o verify`). |
 | 2026-10-30 | 3 | Implemented Object Upload & Chunking (`POST /api/v1/objects`): Flyway `V3__objects_chunks_replicas.sql` (`objects`, `object_metadata`, `chunks`, `chunk_replicas`), JPA entities & repositories, streaming 1 MiB `Chunker` with per-chunk and whole-object SHA-256, `PlacementService` (least-loaded + rotating tie-break across `UP` workers, distinct workers per chunk, failover replacement), `ObjectService.uploadObject` (`UPLOADING`→`ACTIVE` lifecycle, custom metadata validation, automatic failover on single-worker write error, rollback/cleanup on failure), and `ObjectController`. All 43 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 4 | Implemented Object Download & Reconstruction (`GET /api/v1/objects/{objectId}`): pre-flight replica availability check (`prepareDownload`), ordered streaming chunk reconstruction (`streamDownload` via `StreamingResponseBody`), controller-side SHA-256 verification on read with automatic replica failover and corruption marking (`markReplicaCorrupted`), response headers (`Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, `X-Object-Checksum-SHA256`), and `ObjectDownloadIntegrationTest`. All 47 tests pass (`mvn -o verify`). |
 

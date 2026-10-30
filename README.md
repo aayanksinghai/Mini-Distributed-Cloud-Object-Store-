@@ -12,7 +12,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 - **Phase 1 — Project Foundation & Docker Environment:** Completed
 - **Phase 2 — Controller ↔ Worker Communication:** Completed
 - **Phase 3 — Object Upload & Chunking:** Completed
-- **Phase 4 — Download & Reconstruction:** Pending
+- **Phase 4 — Download & Reconstruction:** Completed
+- **Phase 5 — Replication (RF = 2) & Repair Engine:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -105,10 +106,11 @@ docker-compose down
 
 ---
 
-## Implemented Endpoints (Phases 2–3)
+## Implemented Endpoints (Phases 2–4)
 
 ### Client Object API (Controller `:8080`)
 - `POST /api/v1/objects` (`multipart/form-data`: required `file`, optional JSON string `metadata`) — Splits the uploaded object into 1 MiB chunks, computes SHA-256 checksums, places 2 replicas of each chunk on distinct `UP` workers, and returns `201 Created` with `ObjectInfo`.
+- `GET /api/v1/objects/{objectId}` — Streams the complete reconstructed object in chunk order with its original `Content-Type`, `Content-Length`, `Content-Disposition`, `ETag`, and `X-Object-Checksum-SHA256` (`200 OK` / `404 Not Found` / `409 Conflict` / `503 Service Unavailable`). Verifies each chunk's SHA-256 on read and transparently fails over to surviving replicas if a worker is down or a replica is corrupted.
 
 ### Cluster & Admin Endpoints (Controller `:8080`)
 - `GET /api/v1/cluster/workers` — List all registered workers (`UP` / `DOWN`, capacity, used/free bytes, chunk count, last heartbeat).

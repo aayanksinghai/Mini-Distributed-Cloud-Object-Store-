@@ -6,6 +6,7 @@ import com.objectstore.common.dto.EventSeverity;
 import com.objectstore.common.dto.ObjectInfo;
 import com.objectstore.common.dto.ObjectStatus;
 import com.objectstore.common.dto.ReplicaState;
+import com.objectstore.common.dto.WorkerStatus;
 import com.objectstore.common.error.ApiException;
 import com.objectstore.common.error.ErrorCode;
 import com.objectstore.common.util.Sha256;
@@ -30,8 +31,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,7 +42,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Coordinates object uploads, 1 MiB chunking, replica placement across workers, and metadata persistence.
@@ -183,6 +188,143 @@ public class ObjectService {
                     "Failed to upload object '" + objectName + "': " + e.getMessage(),
                     Map.of("objectId", objectId.toString()), e);
         }
+    }
+
+    /**
+     * Pre-validates an object download request (existence, {@code ACTIVE} status, and pre-flight check
+     * that every chunk has at least one {@code HEALTHY} replica on an {@code UP} worker) before any
+     * HTTP 200 response headers or bytes are committed to the client (plan.md D16).
+     */
+    public PreparedDownload prepareDownload(UUID objectId) {
+        StoredObjectEntity object = objectRepository.findById(objectId)
+                .orElseThrow(() -> new ApiException(404, ErrorCode.OBJECT_NOT_FOUND,
+                        "Object " + objectId + " does not exist",
+                        Map.of("objectId", objectId.toString()), null));
+
+        if (object.getStatus() != ObjectStatus.ACTIVE) {
+            throw new ApiException(409, ErrorCode.OBJECT_NOT_READY,
+                    "Object " + objectId + " is currently in state " + object.getStatus() + " and cannot be downloaded",
+                    Map.of("objectId", objectId.toString(), "status", object.getStatus().name()), null);
+        }
+
+        List<ChunkEntity> chunks = chunkRepository.findByObjectIdOrderByChunkIndexAsc(objectId);
+        if (chunks.isEmpty()) {
+            return new PreparedDownload(object, List.of());
+        }
+
+        List<String> chunkIds = chunks.stream().map(ChunkEntity::getId).toList();
+        Map<String, List<ChunkReplicaEntity>> replicasByChunk = replicaRepository
+                .findByChunkIdInOrderByChunkIdAscWorkerIdAsc(chunkIds)
+                .stream()
+                .collect(Collectors.groupingBy(ChunkReplicaEntity::getChunkId));
+        Map<String, WorkerEntity> workersById = workerRepository.findAllByOrderByIdAsc().stream()
+                .collect(Collectors.toMap(WorkerEntity::getId, Function.identity()));
+
+        List<String> unavailableChunkIds = new ArrayList<>();
+        for (ChunkEntity chunk : chunks) {
+            List<ChunkReplicaEntity> replicas = replicasByChunk.getOrDefault(chunk.getId(), List.of());
+            boolean hasAvailableHealthyReplica = replicas.stream().anyMatch(r -> {
+                WorkerEntity w = workersById.get(r.getWorkerId());
+                return r.getState() == ReplicaState.HEALTHY && w != null && w.getStatus() == WorkerStatus.UP;
+            });
+            if (!hasAvailableHealthyReplica) {
+                unavailableChunkIds.add(chunk.getId());
+            }
+        }
+
+        if (!unavailableChunkIds.isEmpty()) {
+            throw new ApiException(503, ErrorCode.CHUNK_UNAVAILABLE,
+                    "Cannot download object " + objectId + ": " + unavailableChunkIds.size()
+                            + " chunk(s) have no healthy replica on an available worker",
+                    Map.of("objectId", objectId.toString(), "unavailableChunkIds", unavailableChunkIds),
+                    null);
+        }
+
+        return new PreparedDownload(object, chunks);
+    }
+
+    /**
+     * Streams all chunks of a prepared download in {@code chunkIndex} order to {@code outputStream},
+     * verifying each chunk's SHA-256 checksum and automatically failing over to surviving replicas
+     * if a worker fails or returns corrupted data.
+     */
+    public void streamDownload(PreparedDownload prepared, OutputStream outputStream) throws IOException {
+        for (ChunkEntity chunk : prepared.chunks()) {
+            byte[] verifiedBytes = fetchVerifiedChunkWithFailover(prepared.object().getId(), chunk);
+            outputStream.write(verifiedBytes);
+        }
+        outputStream.flush();
+    }
+
+    private byte[] fetchVerifiedChunkWithFailover(UUID objectId, ChunkEntity chunk) {
+        List<ChunkReplicaEntity> replicas = replicaRepository.findByChunkIdOrderByWorkerIdAsc(chunk.getId());
+        Map<String, WorkerEntity> workersById = workerRepository.findAllByOrderByIdAsc().stream()
+                .collect(Collectors.toMap(WorkerEntity::getId, Function.identity()));
+
+        List<CandidateReplica> candidates = replicas.stream()
+                .filter(r -> r.getState() == ReplicaState.HEALTHY)
+                .map(r -> new CandidateReplica(r, workersById.get(r.getWorkerId())))
+                .filter(cr -> cr.worker() != null && cr.worker().getStatus() == WorkerStatus.UP)
+                .sorted(Comparator
+                        .comparingInt((CandidateReplica cr) -> cr.worker().getChunkCount())
+                        .thenComparing(cr -> cr.worker().getId()))
+                .toList();
+
+        Exception lastError = null;
+        for (CandidateReplica candidate : candidates) {
+            String workerId = candidate.worker().getId();
+            String baseUrl = candidate.worker().getBaseUrl();
+            try {
+                byte[] bytes = workerClient.getChunk(workerId, baseUrl, chunk.getId());
+                String actualHash = Sha256.hash(bytes);
+                if (bytes.length != chunk.getSizeBytes()
+                        || !actualHash.equalsIgnoreCase(chunk.getChecksumSha256())) {
+                    markReplicaCorrupted(objectId, chunk.getId(), candidate.replica(), workerId,
+                            "Controller checksum/size verification failed on read (expected sha256="
+                                    + chunk.getChecksumSha256() + ", actual=" + actualHash + ")");
+                    continue;
+                }
+                touchReplicaVerified(candidate.replica());
+                return bytes;
+            } catch (ApiException e) {
+                lastError = e;
+                if (ErrorCode.CHUNK_CORRUPTED.equals(e.getCode()) || e.getStatus() == 409) {
+                    markReplicaCorrupted(objectId, chunk.getId(), candidate.replica(), workerId,
+                            "Worker '" + workerId + "' reported chunk " + chunk.getId() + " as corrupted (HTTP 409)");
+                } else {
+                    log.warn("Failed to read chunk {} from worker '{}' ({}): [{}] {}; trying next replica",
+                            chunk.getId(), workerId, baseUrl, e.getCode(), e.getMessage());
+                }
+            }
+        }
+
+        throw new ApiException(503, ErrorCode.CHUNK_UNAVAILABLE,
+                "All replicas failed or were corrupted for chunk " + chunk.getId(),
+                Map.of("objectId", objectId.toString(), "chunkId", chunk.getId()),
+                lastError);
+    }
+
+    private void markReplicaCorrupted(UUID objectId,
+                                      String chunkId,
+                                      ChunkReplicaEntity replica,
+                                      String workerId,
+                                      String reason) {
+        log.warn("Marking replica of chunk {} on worker '{}' as CORRUPTED: {}", chunkId, workerId, reason);
+        txTemplate.executeWithoutResult(status ->
+                replicaRepository.findById(replica.getId()).ifPresent(entity -> {
+                    entity.setState(ReplicaState.CORRUPTED);
+                    replicaRepository.save(entity);
+                }));
+        eventService.record(EventService.CHUNK_CORRUPTED, EventSeverity.WARN, objectId, chunkId, workerId, reason);
+    }
+
+    private void touchReplicaVerified(ChunkReplicaEntity replica) {
+        Instant now = Instant.now();
+        txTemplate.executeWithoutResult(status ->
+                replicaRepository.findById(replica.getId()).ifPresent(entity -> {
+                    entity.setLastVerifiedAt(now);
+                    replicaRepository.save(entity);
+                }));
     }
 
     /**
@@ -383,6 +525,12 @@ public class ObjectService {
             return MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
         return rawContentType.trim();
+    }
+
+    public record PreparedDownload(StoredObjectEntity object, List<ChunkEntity> chunks) {
+    }
+
+    private record CandidateReplica(ChunkReplicaEntity replica, WorkerEntity worker) {
     }
 
     private record WrittenReplica(String chunkId, String workerId, String workerBaseUrl) {
