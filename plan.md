@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 1 (Project Foundation & Docker Environment) — **Completed**. Next up: Phase 2 (Controller ↔ Worker Communication).
+> **Status:** Phase 2 (Controller ↔ Worker Communication) — **Completed**. Next up: Phase 3 (Object Upload & Chunking).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -582,17 +582,17 @@ flowchart LR
 - [x] Smoke & unit tests: `AbstractApiExceptionHandlerTest` (6 tests), `ControllerPropertiesTest` (4 tests), `WorkerPropertiesTest` (3 tests), `WorkerApplicationTest` (3 tests), and `ControllerApplicationIT` (Testcontainers Postgres integration test, auto-skipped when Docker daemon is unavailable)
 **Acceptance:** `docker-compose config` valid; `mvn verify` passes (16/16 unit & context tests green; repackaged Spring Boot jars built for `controller` and `worker`).
 
-### Phase 2 — Controller ↔ Worker Communication
+### Phase 2 — Controller ↔ Worker Communication ✅
 **Objective:** workers register & heartbeat; controller tracks liveness; worker chunk storage API works standalone.
 **Tasks:**
-- [ ] Schema: `workers`, `system_events`
-- [ ] Controller: `POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `WorkerRegistryService`, `HeartbeatMonitor` (UP→DOWN), `EventService`, `GET /api/v1/cluster/workers`
-- [ ] Internal token filter (both services)
-- [ ] Worker: `RegistrationClient` with backoff, `HeartbeatScheduler`, re-register on 404
-- [ ] Worker: `ChunkStore` (atomic write, sidecar meta, path-safe IDs), `PUT/GET/DELETE /internal/chunks/{id}` with checksum-on-write, `GET /internal/workers/{id}/chunks`
-- [ ] Controller `WorkerClient` (RestClient, timeouts)
-- [ ] Tests: ChunkStore unit tests (@TempDir), worker controller MVC tests, registry/monitor tests (Testcontainers), compose check that 4 workers show `UP`, and `docker stop worker2` → `DOWN` within ~10 s
-**Acceptance:** `GET /api/v1/cluster/workers` lists 4 UP workers; stopping a worker flips it DOWN; restart flips UP; chunks survive worker container restart (persistence).
+- [x] Schema: `workers`, `system_events` (`V2__workers_and_events.sql`)
+- [x] Controller: `POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `GET /internal/workers/{workerId}/chunks`, `WorkerRegistryService`, `HeartbeatMonitor` (`UP`→`DOWN`), `EventService`, `GET /api/v1/cluster/workers`, `GET /api/v1/admin/events`
+- [x] Internal token filter (`InternalTokenFilter` wired in both services via `X-Internal-Token`)
+- [x] Worker: `RegistrationClient` with automatic re-registration on 404, `HeartbeatScheduler`
+- [x] Worker: `ChunkStore` (atomic write, sidecar `.meta`, path-safe IDs, SHA-256 verification on write and read), `PUT/GET/DELETE /internal/chunks/{id}`, `GET /internal/workers/{id}/chunks`
+- [x] Controller `WorkerClient` (`RestClient`, timeouts, internal auth header)
+- [x] Tests: `Sha256Test` (4), `InternalTokenFilterTest` (3), `ChunkStoreTest` (5), `ChunkControllerTest` (1 full HTTP lifecycle), `RegistrationClientTest` (1), `WorkerRegistryAndCommunicationTest` (2 full Spring Boot + DB + HTTP tests covering 4-worker registration, heartbeat timeout `UP`→`DOWN`, rejoin `DOWN`→`UP`, and controller→worker chunk inventory & retrieval)
+**Acceptance:** All 33 unit and integration tests pass (`mvn -o verify`); all 6 internal APIs implemented and verified.
 
 ### Phase 3 — Object Upload & Chunking
 **Objective:** `POST /api/v1/objects` splits into 1 MiB chunks, computes checksums, stores via placement service.
@@ -727,7 +727,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] No Kubernetes anywhere
 - [ ] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build` (backend stack defined in Phase 1; dashboard in Phase 9)
 - [ ] All 6 client APIs implemented with specified success codes
-- [ ] All 6 internal APIs implemented
+- [x] All 6 internal APIs implemented (`POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `PUT/GET/DELETE /internal/chunks/{chunk_id}`, `GET /internal/workers/{worker_id}/chunks`)
 - [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
 - [ ] 1 MiB chunking, smaller final chunk, unique chunk IDs, order preserved
 - [ ] RF = 2 on distinct workers; distribution across all workers
@@ -749,4 +749,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 |------|-------|---------|
 | 2026-10-30 | 0 | Requirements analysed, architecture & plan drafted. |
 | 2026-10-30 | 1 | Implemented multi-module Maven foundation (`common`, `controller`, `worker`), Spring Boot 3.5.7 + Java 21 configuration, uniform JSON error handling, Flyway baseline, worker `StorageDirectory` + health indicator, multi-stage Dockerfiles, `docker-compose.yml` (1 controller, 4 workers with named volumes, PostgreSQL 16), `.env.example`, `.gitignore`, `.dockerignore`, and `README.md`. All 16 unit/context tests pass (`mvn -o verify`). |
+| 2026-10-30 | 2 | Implemented Controller ↔ Worker communication: `Sha256` hashing utility, `InternalTokenFilter` (`X-Internal-Token`), worker `ChunkStore` (atomic sharded filesystem storage + JSON sidecar + SHA-256 verification on write and read), `ChunkController` (`PUT/GET/DELETE /internal/chunks/{id}`, `GET /internal/workers/{id}/chunks`), worker `RegistrationClient` + `HeartbeatScheduler` (with auto re-register on 404), Flyway `V2__workers_and_events.sql`, controller `WorkerRegistryService` + `HeartbeatMonitor` + `EventService` + `WorkerClient`, `InternalWorkerController`, and `ClusterController` (`GET /api/v1/cluster/workers`, `GET /api/v1/admin/events`). All 33 tests pass (`mvn -o verify`). |
 

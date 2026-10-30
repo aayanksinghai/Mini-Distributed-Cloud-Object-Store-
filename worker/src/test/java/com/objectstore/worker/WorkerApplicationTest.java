@@ -29,6 +29,7 @@ class WorkerApplicationTest {
         registry.add("worker.id", () -> "worker-test");
         registry.add("worker.storage-dir", () -> tempDir.resolve("chunks").toString());
         registry.add("worker.internal-api-token", () -> "test-token");
+        registry.add("worker.scheduling.enabled", () -> "false");
     }
 
     private static final ParameterizedTypeReference<Map<String, Object>> JSON_MAP = new ParameterizedTypeReference<>() {
@@ -55,9 +56,16 @@ class WorkerApplicationTest {
 
     @Test
     void unknownEndpointReturnsStructuredJson404() {
-        ResponseEntity<Map<String, Object>> resp = rest.exchange("/internal/nope", HttpMethod.GET, null, JSON_MAP);
+        ResponseEntity<Map<String, Object>> resp = rest.exchange("/api/v1/nope", HttpMethod.GET, null, JSON_MAP);
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(resp.getBody()).containsEntry("code", "NOT_FOUND").containsEntry("status", 404);
+    }
+
+    @Test
+    void internalEndpointWithoutTokenReturns401() {
+        ResponseEntity<Map<String, Object>> resp = rest.exchange("/internal/nope", HttpMethod.GET, null, JSON_MAP);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(resp.getBody()).containsEntry("code", "UNAUTHORIZED_INTERNAL").containsEntry("status", 401);
     }
 }
 

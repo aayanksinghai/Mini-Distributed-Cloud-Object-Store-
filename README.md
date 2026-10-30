@@ -10,7 +10,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 
 - **Phase 0 — Architecture & Plan:** Completed (`plan.md`)
 - **Phase 1 — Project Foundation & Docker Environment:** Completed
-- **Phase 2 — Controller ↔ Worker Communication:** Pending
+- **Phase 2 — Controller ↔ Worker Communication:** Completed
+- **Phase 3 — Object Upload & Chunking:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -100,6 +101,22 @@ Stop the cluster (preserving persistent volumes):
 ```bash
 docker-compose down
 ```
+
+---
+
+## Implemented Endpoints (Phase 2)
+
+### Cluster & Admin Endpoints (Controller `:8080`)
+- `GET /api/v1/cluster/workers` — List all registered workers (`UP` / `DOWN`, capacity, used/free bytes, chunk count, last heartbeat).
+- `GET /api/v1/admin/events?since={id}&limit=100` — Inspect cluster and storage lifecycle events (`WORKER_REGISTERED`, `WORKER_UP`, `WORKER_DOWN`, `CHUNK_CORRUPTED`).
+
+### Internal Worker Endpoints (`X-Internal-Token` required)
+- `POST /internal/workers/register` (Controller) — Register a worker node (`201 Created` / `200 OK` / `409 Conflict`).
+- `POST /internal/workers/heartbeat` (Controller) — Report worker liveness and storage metrics (`200 OK` / `404 Not Found`).
+- `PUT /internal/chunks/{chunkId}[?overwrite=true]` (Worker) — Atomically store a chunk on disk after verifying `X-Chunk-Checksum` (`201 Created` / `200 OK` / `400 Bad Request` / `409 Conflict`).
+- `GET /internal/chunks/{chunkId}` (Worker) — Retrieve a chunk after verifying its on-disk SHA-256 (`200 OK` / `404 Not Found` / `409 CHUNK_CORRUPTED`).
+- `DELETE /internal/chunks/{chunkId}` (Worker) — Delete a stored chunk (`204 No Content` / `404 Not Found`).
+- `GET /internal/workers/{workerId}/chunks[?verify=true]` (Worker & Controller) — List chunks stored by a worker, optionally re-verifying SHA-256 checksums on disk.
 
 ---
 
