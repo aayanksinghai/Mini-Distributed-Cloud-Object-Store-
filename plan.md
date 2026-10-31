@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 10 (Comprehensive Testing & Demo Scripts) — **Completed**. Next up: Phase 11 (Final Documentation).
+> **Status:** All Phases (Phase 0 – Phase 11: Final Documentation) — **Completed**.
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -673,10 +673,10 @@ flowchart LR
 - [x] Persistence test: `docker-compose down` (without `-v`) → `up` → objects still downloadable and byte-identical
 **Acceptance:** `mvn -B -o verify` passes all 63 backend tests (`common`: 13, `controller`: 35, `worker`: 15), `npm --prefix dashboard test` passes all 8 frontend tests, and `bash -n scripts/demo/*.sh scripts/e2e/*.sh` validates all demo and E2E scripts cleanly.
 
-### Phase 11 — Final Documentation
-- [ ] README: overview, architecture diagrams, setup, env vars, full API docs with curl examples, demo walkthroughs, design decisions, limitations
-- [ ] Update `plan.md` checklist to final state
-- [ ] Optional `docs/` screenshots for report
+### Phase 11 — Final Documentation ✅
+- [x] README: overview, architecture diagrams, setup, env vars, full API docs with curl examples, demo walkthroughs, design decisions, limitations (`README.md`)
+- [x] Update `plan.md` checklist to final state (`plan.md`)
+- [x] Optional `docs/` guide for evaluation & demonstrations (`docs/DEMO_GUIDE.md`)
 
 ---
 
@@ -739,7 +739,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events (`dashboard/`)
 - [x] Unit + integration + E2E tests passing (`mvn -B -o verify`: 63/63 tests; `npm --prefix dashboard test`: 8/8 tests; `scripts/e2e/run-all.sh`)
 - [x] Demo scripts for all six §10 scenarios (`scripts/demo/01-object-storage.sh` … `06-data-integrity.sh`)
-- [ ] README complete (setup, env vars, API docs, architecture, demos)
+- [x] README complete (setup, env vars, API docs, architecture, demos) (`README.md`, `docs/DEMO_GUIDE.md`)
 
 ---
 
@@ -758,4 +758,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-31 | 8 | Implemented Data Integrity Verification & Recovery: `ScrubResultInfo` DTO, worker background `Scrubber` + heartbeat reporting (`corruptChunkIds` in `HeartbeatScheduler` -> `WorkerRegistryService.heartbeat` marking replicas `CORRUPTED`), opt-in worker `DebugController` (`POST /internal/debug/chunks/{id}/corrupt` gated by `WORKER_DEBUG_ENDPOINTS`), controller `IntegrityService` (`POST /api/v1/admin/integrity/scrub` and `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt`), `scripts/demo/corrupt-chunk.sh`, pre-flight first-chunk verification in `ObjectService.prepareDownload` so all-replicas-corrupt returns clean `503 CHUNK_UNAVAILABLE`, plus `ScrubberAndDebugControllerTest` and `DataIntegrityAndRecoveryIntegrationTest`. All 60 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 9 | Implemented Web Dashboard (`dashboard/`): React 18 + Vite 5 + TypeScript 5 SPA (`ObjectsPage`, `ObjectDetailPage`, `ClusterPage`, `EventsPage`, `ChunkStrip`, `ReplicaMatrix`, `WorkerCard`, `MetadataRowsEditor`, `EventList`, `StatusBadge`, `Toasts`, typed REST `client.ts` + `types.ts`, WebCrypto `sha256.ts`, `metadata.ts`, `format.ts`), multi-stage `dashboard/Dockerfile` + `dashboard/nginx.conf` reverse-proxying `/api/` and `/actuator/` to `controller:8080`, added `dashboard` service on host port `3000` in `docker-compose.yml`, and verified with `npm --prefix dashboard run build` and `npm --prefix dashboard test` (8/8 tests). |
 | 2026-10-31 | 10 | Implemented Comprehensive Testing & Demo Scripts: `ConcurrencyAndEdgeCasesIntegrationTest` (8 concurrent multi-chunk uploads, sequential metadata patch + deletion lifecycle, admin 404 error handling), narrated demo scripts (`scripts/demo/_common.sh`, `01-object-storage.sh` .. `06-data-integrity.sh`) covering all 6 PDF §10 scenarios, and full-stack E2E runner `scripts/e2e/run-all.sh` (including named-volume persistence verification across `docker-compose down` / `up`). All 63 backend tests (`mvn -B -o verify`) and 8 frontend tests (`npm --prefix dashboard test`) pass. |
+| 2026-10-31 | 11 | Completed Final Documentation: comprehensive `README.md` (architecture diagrams, core workflows, repository structure, setup & Docker Compose guide, Web Dashboard guide, complete REST API documentation with `curl` examples for all 6 client APIs, 6 internal worker APIs, and cluster/admin endpoints, PDF §10.1–§10.6 walkthroughs, environment variable reference, design decisions, and limitations), `docs/DEMO_GUIDE.md` live grading cheat sheet, and finalized `plan.md` completion checklist. |
 
