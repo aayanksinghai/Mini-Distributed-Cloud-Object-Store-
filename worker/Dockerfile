@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # Build context: repository root (multi-module Maven project).
 
 FROM maven:3.9-eclipse-temurin-21 AS build
@@ -9,8 +8,7 @@ COPY controller/pom.xml controller/
 COPY worker/pom.xml worker/
 COPY common/src common/src
 COPY worker/src worker/src
-RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -q -pl worker -am package -DskipTests
+RUN mvn -B -q -pl worker -am package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 RUN addgroup -S app && adduser -S app -G app \
