@@ -17,7 +17,8 @@ The system consists of **1 Controller** node and **4 independent Storage Worker*
 - **Phase 6 — Metadata Operations, Listing & Deletion:** Completed
 - **Phase 7 — Worker Failure Handling & Rejoin Reconciliation:** Completed
 - **Phase 8 — Data Integrity Verification & Recovery:** Completed
-- **Phase 9 — Dashboard Integration:** Pending
+- **Phase 9 — Dashboard Integration:** Completed
+- **Phase 10 — Comprehensive Testing & Demo Scripts:** Pending
 
 See [`plan.md`](./plan.md) for the full architecture, database schema, REST API specifications, and phased roadmap.
 
@@ -50,6 +51,7 @@ Clients (curl / scripts / Dashboard)
 | `common` | Shared DTOs (`ErrorResponse`), error codes (`ErrorCode`), base exception hierarchy (`ApiException`, `AbstractApiExceptionHandler`), and internal HTTP header constants (`InternalHeaders`). |
 | `controller` | Metadata store (PostgreSQL + Flyway), cluster coordination, chunk placement, replication, and client-facing REST APIs (`:8080`). |
 | `worker` | Independent storage node persisting chunk files on its dedicated local filesystem volume (`:8081`), reporting storage health via `/actuator/health`. |
+| `dashboard` | React 18 + TypeScript + Vite single-page web dashboard served by Nginx (`:3000` → `:80`), reverse-proxying `/api/*` to `controller:8080`. |
 
 ---
 

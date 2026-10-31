@@ -1,0 +1,27 @@
+{
+  "name": "objectstore-dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Web dashboard for the Mini Distributed Cloud Object Store (uses the real controller REST API).",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "test": "node --test dist-test/dashboard.test.mjs && rm -rf dist-test",
+    "pretest": "./node_modules/.bin/esbuild src/__tests__/dashboard.test.ts --bundle --platform=node --format=esm --packages=external --outfile=dist-test/dashboard.test.mjs"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.28",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.9.3",
+    "vite": "5.4.21"
+  }
+}
+

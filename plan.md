@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 8 (Data Integrity Verification & Recovery) — **Completed**. Next up: Phase 9 (Dashboard Integration).
+> **Status:** Phase 9 (Dashboard Integration) — **Completed**. Next up: Phase 10 (Comprehensive Testing & Demo Scripts).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -655,16 +655,16 @@ flowchart LR
 - [x] Tests: `ScrubberAndDebugControllerTest` (worker scrub, debug corruption, 409 on read, overwrite recovery) and `DataIntegrityAndRecoveryIntegrationTest` (3 full HTTP + DB + 4-stub-worker tests covering corruption detection on read + failover + overwrite repair, proactive `POST /api/v1/admin/integrity/scrub` bit-rot detection & auto-repair, heartbeat `corruptChunkIds` reporting, and 503 when all replicas are corrupted)
 **Acceptance:** Data integrity verification and recovery verified end-to-end; all 60 tests pass (`mvn -o verify`).
 
-### Phase 9 — Dashboard Integration
+### Phase 9 — Dashboard Integration ✅
 **Pages / features:**
-- [ ] **Objects:** table (paginated), drag-and-drop upload with optional metadata key/values, download, delete with confirm
-- [ ] **Object detail:** system metadata, custom metadata editor (PATCH), **chunk strip** (ordered chunks sized proportionally) + **replica matrix** (chunks × 4 workers, coloured by replica state)
-- [ ] **Cluster:** 4 worker cards (UP/DOWN, last heartbeat, chunks, bytes), storage distribution bars, cluster RF summary (healthy / under-replicated / corrupted)
-- [ ] **Operations log:** live-polled `system_events` with severity filters
-- [ ] Buttons for "Run repair now", "Run integrity scrub", (optional) "Corrupt replica" if debug enabled
-- [ ] Nginx reverse proxy, compose service `dashboard` on host port 3000
-- [ ] Tests: Vitest for API client & key components; manual demo checklist
-**Acceptance:** every §10 demonstration can be observed in the UI using only real API data.
+- [x] **Objects:** table (paginated & sortable), drag-and-drop upload with optional custom metadata key/values and upload progress, download, delete with confirmation (`ObjectsPage.tsx`, `MetadataRowsEditor.tsx`)
+- [x] **Object detail:** system metadata, in-browser SHA-256 download verification (`sha256.ts`), custom metadata editor (`PATCH` JSON Merge Patch), **chunk strip** (`ChunkStrip.tsx`: ordered chunks sized proportionally) + **replica matrix** (`ReplicaMatrix.tsx`: chunks × 4 workers coloured by replica state) (`ObjectDetailPage.tsx`)
+- [x] **Cluster:** 4 worker cards (`WorkerCard.tsx`: `UP`/`DOWN`, last heartbeat age, chunks, bytes, per-worker reconcile button), storage distribution bars, cluster RF summary (`ClusterSummary`: healthy / under-replicated / unavailable / corrupted) (`ClusterPage.tsx`)
+- [x] **Operations log:** live-polled `system_events` with `since` cursor, severity filters (`INFO`/`WARN`/`ERROR`), event type filter, and search (`EventsPage.tsx`, `EventList.tsx`)
+- [x] Buttons for "Run replication repair now", "Run integrity scrub (SHA-256)", per-worker "Reconcile inventory", and opt-in "Corrupt this replica (demo)" when a replica cell is selected
+- [x] Nginx reverse proxy (`dashboard/nginx.conf`, `dashboard/Dockerfile`), compose service `dashboard` on host port `3000` (`docker-compose.yml`)
+- [x] Tests: `dashboard/src/__tests__/dashboard.test.ts` (8 tests across 5 suites covering formatting helpers, metadata validation & JSON Merge Patch builder, `ReplicaMatrix` & `StatusBadge` helpers, hash routing & event deduplication, and typed REST API client calls)
+**Acceptance:** `npm --prefix dashboard run build` (`tsc -b && vite build`) and `npm --prefix dashboard test` (8/8 tests) pass; `docker-compose config` valid; every §10 demonstration is observable in the UI using only real REST API data.
 
 ### Phase 10 — Comprehensive Testing & Demo Scripts
 - [ ] Coverage review; fill gaps (error paths, concurrency: parallel uploads, delete during download)
@@ -725,7 +725,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 
 - [x] Each worker has its own named persistent volume (`worker1-data`..`worker4-data` in `docker-compose.yml`); data survives restarts
 - [x] No Kubernetes anywhere
-- [ ] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build` (backend stack defined in Phase 1; dashboard in Phase 9)
+- [x] 1 controller + 4 workers + Postgres + dashboard via one `docker-compose up -d --build` (`docker-compose.yml`)
 - [x] All 6 client APIs implemented with specified success codes (`POST /api/v1/objects` → 201, `GET /api/v1/objects/{id}` → 200, `GET /api/v1/objects/{id}/metadata` → 200, `PATCH /api/v1/objects/{id}/metadata` → 200, `DELETE /api/v1/objects/{id}` → 204, `GET /api/v1/objects` → 200)
 - [x] All 6 internal APIs implemented (`POST /internal/workers/register`, `POST /internal/workers/heartbeat`, `PUT/GET/DELETE /internal/chunks/{chunk_id}`, `GET /internal/workers/{worker_id}/chunks`)
 - [x] Structured JSON errors (`ErrorResponse` + `AbstractApiExceptionHandler` wired in both services) with 400/404/409/500/503 as appropriate
@@ -736,7 +736,7 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] Rejoin reconciliation (RF exactly 2 after restart; `ReconciliationService`)
 - [x] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired (`ChunkStore`, `Scrubber`, `IntegrityService`, `ReplicationService`)
 - [x] Custom metadata upload / retrieve / patch without re-upload (`ObjectService` + `ObjectController`)
-- [ ] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events
+- [x] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events (`dashboard/`)
 - [ ] Unit + integration + E2E tests passing
 - [ ] Demo scripts for all six §10 scenarios
 - [ ] README complete (setup, env vars, API docs, architecture, demos)
@@ -756,4 +756,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-31 | 6 | Implemented Metadata Operations, Listing & Deletion: `ChunkReplicaInfo`/`ChunkMetadataInfo`/`ObjectMetadataResponse`/`ObjectListPage` DTOs, Flyway `V4__pending_deletions.sql` (`PendingDeletionEntity`), `GET /api/v1/objects/{id}/metadata`, `PATCH /api/v1/objects/{id}/metadata` (JSON Merge Patch without re-uploading data), `GET /api/v1/objects` (pagination & sorting), `DELETE /api/v1/objects/{id}` (`204 No Content`, immediate worker chunk deletion + deferred deletion queue for `DOWN` workers), and `ObjectMetadataListDeleteIntegrationTest`. All 53 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 7 | Implemented Worker Failure Handling & Rejoin Reconciliation: `ReconciliationResultInfo` and enriched `WorkerChunksResponse` (with `expectedChunkIds`, `missingChunkIds`, `orphanChunkIds`, `corruptChunkIds`), `ReconciliationService` (`handleWorkerDown` marking replicas `UNAVAILABLE` + recording `UNDER_REPLICATED` events, `reconcileWorker` executing `pending_deletions`, garbage-collecting orphans, re-adopting valid replicas, removing missing replicas, and trimming surplus 3rd copies back to exact `RF = 2`, plus `getWorkerChunksWithDiff`), wired into `WorkerRegistryService`, `InternalWorkerController`, and `ClusterController` (`POST /api/v1/admin/workers/{workerId}/reconcile`), and verified via `WorkerFailureAndReconciliationIntegrationTest`. All 56 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 8 | Implemented Data Integrity Verification & Recovery: `ScrubResultInfo` DTO, worker background `Scrubber` + heartbeat reporting (`corruptChunkIds` in `HeartbeatScheduler` -> `WorkerRegistryService.heartbeat` marking replicas `CORRUPTED`), opt-in worker `DebugController` (`POST /internal/debug/chunks/{id}/corrupt` gated by `WORKER_DEBUG_ENDPOINTS`), controller `IntegrityService` (`POST /api/v1/admin/integrity/scrub` and `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt`), `scripts/demo/corrupt-chunk.sh`, pre-flight first-chunk verification in `ObjectService.prepareDownload` so all-replicas-corrupt returns clean `503 CHUNK_UNAVAILABLE`, plus `ScrubberAndDebugControllerTest` and `DataIntegrityAndRecoveryIntegrationTest`. All 60 tests pass (`mvn -o verify`). |
+| 2026-10-31 | 9 | Implemented Web Dashboard (`dashboard/`): React 18 + Vite 5 + TypeScript 5 SPA (`ObjectsPage`, `ObjectDetailPage`, `ClusterPage`, `EventsPage`, `ChunkStrip`, `ReplicaMatrix`, `WorkerCard`, `MetadataRowsEditor`, `EventList`, `StatusBadge`, `Toasts`, typed REST `client.ts` + `types.ts`, WebCrypto `sha256.ts`, `metadata.ts`, `format.ts`), multi-stage `dashboard/Dockerfile` + `dashboard/nginx.conf` reverse-proxying `/api/` and `/actuator/` to `controller:8080`, added `dashboard` service on host port `3000` in `docker-compose.yml`, and verified with `npm --prefix dashboard run build` and `npm --prefix dashboard test` (8/8 tests). |
 

@@ -16,7 +16,10 @@ target/
 
 # Dashboard (Phase 9)
 node_modules/
+**/node_modules/
 dist/
+**/dist/
+**/dist-test/
 
 # OS
 .DS_Store

@@ -1,4 +1,4 @@
-# Mini Distributed Cloud Object Store — local deployment (1 controller, 4 workers, PostgreSQL).
+# Mini Distributed Cloud Object Store — local deployment (1 controller, 4 workers, PostgreSQL, web dashboard).
 # Start:  docker-compose up -d --build
 # Kubernetes is intentionally NOT used (coursework requirement).
 
@@ -110,6 +110,19 @@ services:
       WORKER_ADVERTISED_URL: http://worker4:8081
     volumes:
       - worker4-data:/data
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    image: objectstore/dashboard:latest
+    container_name: dashboard
+    depends_on:
+      controller:
+        condition: service_healthy
+    ports:
+      - "${DASHBOARD_PORT:-3000}:80"
+    networks: [objectstore-net]
 
 networks:
   objectstore-net:
