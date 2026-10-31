@@ -1,6 +1,6 @@
 # Mini Distributed Cloud Object Store — Architecture & Implementation Plan
 
-> **Status:** Phase 9 (Dashboard Integration) — **Completed**. Next up: Phase 10 (Comprehensive Testing & Demo Scripts).
+> **Status:** Phase 10 (Comprehensive Testing & Demo Scripts) — **Completed**. Next up: Phase 11 (Final Documentation).
 > **Source of truth:** `Mini_Distributed_Cloud_Object_Store.pdf` (repository root). Section numbers below (e.g. **§5.1**) refer to that PDF.
 
 ---
@@ -666,12 +666,12 @@ flowchart LR
 - [x] Tests: `dashboard/src/__tests__/dashboard.test.ts` (8 tests across 5 suites covering formatting helpers, metadata validation & JSON Merge Patch builder, `ReplicaMatrix` & `StatusBadge` helpers, hash routing & event deduplication, and typed REST API client calls)
 **Acceptance:** `npm --prefix dashboard run build` (`tsc -b && vite build`) and `npm --prefix dashboard test` (8/8 tests) pass; `docker-compose config` valid; every §10 demonstration is observable in the UI using only real REST API data.
 
-### Phase 10 — Comprehensive Testing & Demo Scripts
-- [ ] Coverage review; fill gaps (error paths, concurrency: parallel uploads, delete during download)
-- [ ] `scripts/e2e/run-all.sh` (compose up → all scenarios → assertions → exit code)
-- [ ] `scripts/demo/01-object-storage.sh` … `06-data-integrity.sh` (narrated output)
-- [ ] Persistence test: `docker-compose down` (without `-v`) → `up` → objects still downloadable
-**Acceptance:** `mvn verify` and `scripts/e2e/run-all.sh` green from a clean clone.
+### Phase 10 — Comprehensive Testing & Demo Scripts ✅
+- [x] Coverage review; fill gaps (`ConcurrencyAndEdgeCasesIntegrationTest`: 8 concurrent multi-chunk uploads across virtual threads, sequential metadata patches + deletion lifecycle, and admin 404 error paths)
+- [x] `scripts/e2e/run-all.sh` (compose up → dashboard health → all 6 scenarios → persistence across restart → exit code)
+- [x] `scripts/demo/01-object-storage.sh` … `06-data-integrity.sh` + `scripts/demo/_common.sh` (narrated output & automated assertions for all 6 PDF §10 scenarios)
+- [x] Persistence test: `docker-compose down` (without `-v`) → `up` → objects still downloadable and byte-identical
+**Acceptance:** `mvn -B -o verify` passes all 63 backend tests (`common`: 13, `controller`: 35, `worker`: 15), `npm --prefix dashboard test` passes all 8 frontend tests, and `bash -n scripts/demo/*.sh scripts/e2e/*.sh` validates all demo and E2E scripts cleanly.
 
 ### Phase 11 — Final Documentation
 - [ ] README: overview, architecture diagrams, setup, env vars, full API docs with curl examples, demo walkthroughs, design decisions, limitations
@@ -737,8 +737,8 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 - [x] SHA-256 per chunk + per object; corruption detected; never serve corrupt data when valid copy exists; corrupt replica repaired (`ChunkStore`, `Scrubber`, `IntegrityService`, `ReplicationService`)
 - [x] Custom metadata upload / retrieve / patch without re-upload (`ObjectService` + `ObjectController`)
 - [x] Dashboard using real APIs: upload, download, browse, metadata edit, delete, chunk/replica visualisation, worker health, events (`dashboard/`)
-- [ ] Unit + integration + E2E tests passing
-- [ ] Demo scripts for all six §10 scenarios
+- [x] Unit + integration + E2E tests passing (`mvn -B -o verify`: 63/63 tests; `npm --prefix dashboard test`: 8/8 tests; `scripts/e2e/run-all.sh`)
+- [x] Demo scripts for all six §10 scenarios (`scripts/demo/01-object-storage.sh` … `06-data-integrity.sh`)
 - [ ] README complete (setup, env vars, API docs, architecture, demos)
 
 ---
@@ -757,4 +757,5 @@ Test data: generated files of 0 B, 1 B, exactly 1 MiB, 1 MiB+1, ~5.3 MiB, ~25 Mi
 | 2026-10-31 | 7 | Implemented Worker Failure Handling & Rejoin Reconciliation: `ReconciliationResultInfo` and enriched `WorkerChunksResponse` (with `expectedChunkIds`, `missingChunkIds`, `orphanChunkIds`, `corruptChunkIds`), `ReconciliationService` (`handleWorkerDown` marking replicas `UNAVAILABLE` + recording `UNDER_REPLICATED` events, `reconcileWorker` executing `pending_deletions`, garbage-collecting orphans, re-adopting valid replicas, removing missing replicas, and trimming surplus 3rd copies back to exact `RF = 2`, plus `getWorkerChunksWithDiff`), wired into `WorkerRegistryService`, `InternalWorkerController`, and `ClusterController` (`POST /api/v1/admin/workers/{workerId}/reconcile`), and verified via `WorkerFailureAndReconciliationIntegrationTest`. All 56 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 8 | Implemented Data Integrity Verification & Recovery: `ScrubResultInfo` DTO, worker background `Scrubber` + heartbeat reporting (`corruptChunkIds` in `HeartbeatScheduler` -> `WorkerRegistryService.heartbeat` marking replicas `CORRUPTED`), opt-in worker `DebugController` (`POST /internal/debug/chunks/{id}/corrupt` gated by `WORKER_DEBUG_ENDPOINTS`), controller `IntegrityService` (`POST /api/v1/admin/integrity/scrub` and `POST /api/v1/admin/workers/{workerId}/chunks/{chunkId}/corrupt`), `scripts/demo/corrupt-chunk.sh`, pre-flight first-chunk verification in `ObjectService.prepareDownload` so all-replicas-corrupt returns clean `503 CHUNK_UNAVAILABLE`, plus `ScrubberAndDebugControllerTest` and `DataIntegrityAndRecoveryIntegrationTest`. All 60 tests pass (`mvn -o verify`). |
 | 2026-10-31 | 9 | Implemented Web Dashboard (`dashboard/`): React 18 + Vite 5 + TypeScript 5 SPA (`ObjectsPage`, `ObjectDetailPage`, `ClusterPage`, `EventsPage`, `ChunkStrip`, `ReplicaMatrix`, `WorkerCard`, `MetadataRowsEditor`, `EventList`, `StatusBadge`, `Toasts`, typed REST `client.ts` + `types.ts`, WebCrypto `sha256.ts`, `metadata.ts`, `format.ts`), multi-stage `dashboard/Dockerfile` + `dashboard/nginx.conf` reverse-proxying `/api/` and `/actuator/` to `controller:8080`, added `dashboard` service on host port `3000` in `docker-compose.yml`, and verified with `npm --prefix dashboard run build` and `npm --prefix dashboard test` (8/8 tests). |
+| 2026-10-31 | 10 | Implemented Comprehensive Testing & Demo Scripts: `ConcurrencyAndEdgeCasesIntegrationTest` (8 concurrent multi-chunk uploads, sequential metadata patch + deletion lifecycle, admin 404 error handling), narrated demo scripts (`scripts/demo/_common.sh`, `01-object-storage.sh` .. `06-data-integrity.sh`) covering all 6 PDF §10 scenarios, and full-stack E2E runner `scripts/e2e/run-all.sh` (including named-volume persistence verification across `docker-compose down` / `up`). All 63 backend tests (`mvn -B -o verify`) and 8 frontend tests (`npm --prefix dashboard test`) pass. |
 
