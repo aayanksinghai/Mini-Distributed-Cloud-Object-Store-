@@ -1,7 +1,7 @@
 \documentclass[12pt,a4paper]{report}
 
 %% --- Packages ---
-\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[a4paper, margin=2.5cm, headheight=15pt]{geometry}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{booktabs}
@@ -121,12 +121,13 @@
 \newcommand{\screenshot}[2]{%
   \begin{figure}[H]
     \centering
-    \fbox{\begin{minipage}{0.9\textwidth}
-      \vspace{3.5cm}
+    \fbox{\begin{minipage}{0.92\textwidth}
+      \vspace{1.5cm}
       \centering
-      \textcolor{medgray}{\Large\faCamera}\\[6pt]
-      \textcolor{darkgray}{\small\textit{[ Screenshot: #1 ]}}
-      \vspace{3.5cm}
+      \textcolor{accentblue}{\Large\faCamera}\\[8pt]
+      \textcolor{darkgray}{\small\textbf{[ Screenshot Placeholder ]}}\\[4pt]
+      \textcolor{darkgray}{\footnotesize\textit{#1}}
+      \vspace{1.5cm}
     \end{minipage}}
     \caption{#1}
     \label{fig:#2}
@@ -137,27 +138,33 @@
 \newcommand{\twoscreenshots}[4]{%
   \begin{figure}[H]
     \centering
-    \begin{subfigure}[t]{0.47\textwidth}
+    \begin{subfigure}[t]{0.48\textwidth}
       \fbox{\begin{minipage}{\textwidth}
-        \vspace{2.5cm}
+        \vspace{1.2cm}
         \centering
-        \textcolor{medgray}{\faCamera}\\[4pt]
-        \textcolor{darkgray}{\tiny\textit{[ #1 ]}}
-        \vspace{2.5cm}
+        \textcolor{accentblue}{\faCamera}\\[4pt]
+        \textcolor{darkgray}{\scriptsize\textbf{[ Screenshot ]}}\\[2pt]
+        \textcolor{darkgray}{\tiny\textit{#1}}
+        \vspace{1.2cm}
       \end{minipage}}
       \caption{#1}
       \label{fig:#2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[t]{0.47\textwidth}
+    \begin{subfigure}[t]{0.48\textwidth}
       \fbox{\begin{minipage}{\textwidth}
-        \vspace{2.5cm}
+        \vspace{1.2cm}
         \centering
-        \textcolor{medgray}{\faCamera}\\[4pt]
-        \textcolor{darkgray}{\tiny\textit{[ #3 ]}}
-        \vspace{2.5cm}
+        \textcolor{accentblue}{\faCamera}\\[4pt]
+        \textcolor{darkgray}{\scriptsize\textbf{[ Screenshot ]}}\\[2pt]
+        \textcolor{darkgray}{\tiny\textit{#3}}
+        \vspace{1.2cm}
       \end{minipage}}
       \caption{#3}
+      \label{fig:#4}
+    \end{subfigure}
+  \end{figure}
+}
       \label{fig:#4}
     \end{subfigure}
   \end{figure}
@@ -797,9 +804,9 @@ The system implements a \textbf{two-layer integrity model}:
   \centering
   \caption{Two-layer SHA-256 integrity checks.}
   \label{tab:integrity}
-  \begin{tabularx}{\textwidth}{lXl}
+  \begin{tabularx}{\textwidth}{>{\bfseries}l X p{4.5cm}}
     \toprule
-    \textbf{Layer} & \textbf{What is checked} & \textbf{Where} \\
+    \textbf{Layer} & \textbf{What is checked} & \textbf{Where Verified} \\
     \midrule
     Worker on-disk  & \texttt{.chunk} bytes vs. \texttt{.meta.json} checksum on every read & Worker \texttt{ChunkStore.get()} \\
     Controller receive & Received bytes vs. Postgres \texttt{chunks.checksum\_sha256} on every download & Controller \texttt{ObjectService} \\
@@ -830,13 +837,13 @@ The Objects view provides:
 
 \screenshot{Dashboard Object Detail page --- chunk strip, replica matrix, and metadata editor}{dash-object-detail}
 
-\twoscreenshots{ChunkStrip showing 6 ordered 1 MiB chunks, final chunk smaller}{dash-chunk-strip}{ReplicaMatrix (chunks \textchar215 workers) coloured by HEALTHY/CORRUPTED/UNAVAILABLE state}{dash-replica-matrix}
+\twoscreenshots{ChunkStrip showing 6 ordered 1 MiB chunks, final chunk smaller}{dash-chunk-strip}{ReplicaMatrix (chunks $\times$ workers) coloured by HEALTHY/CORRUPTED/UNAVAILABLE state}{dash-replica-matrix}
 
 The Object Detail view includes:
 \begin{itemize}
   \item \textbf{In-Browser SHA-256 Verifier:} Click ``Verify Download SHA-256'' to stream the object through WebCrypto \texttt{crypto.subtle.digest} and compare against the stored \texttt{X-Object-Checksum-SHA256}.
   \item \textbf{Proportional Chunk Strip (\texttt{ChunkStrip}):} Renders ordered chunks with sizes proportional to their byte count, coloured by replication status.
-  \item \textbf{Chunk \textchar215 Worker Replica Matrix (\texttt{ReplicaMatrix}):} Interactive table mapping every chunk across \texttt{worker1}...\texttt{worker4}, with cell colours for \texttt{HEALTHY} (green), \texttt{CORRUPTED} (red), \texttt{UNAVAILABLE} (orange). Clicking a cell opens an action drawer with ``Corrupt this replica (demo)'' (when debug mode is enabled) and ``Scrub \& Repair Object''.
+  \item \textbf{Chunk $\times$ Worker Replica Matrix (\texttt{ReplicaMatrix}):} Interactive table mapping every chunk across \texttt{worker1}...\texttt{worker4}, with cell colours for \texttt{HEALTHY} (green), \texttt{CORRUPTED} (red), \texttt{UNAVAILABLE} (orange). Clicking a cell opens an action drawer with ``Corrupt this replica (demo)'' (when debug mode is enabled) and ``Scrub \& Repair Object''.
   \item \textbf{Live Metadata Editor:} Sends \texttt{PATCH} requests to add, update, or null-delete metadata keys in real time.
 \end{itemize}
 
@@ -870,16 +877,16 @@ The system is covered at five levels:
   \centering
   \caption{Multi-level testing strategy.}
   \label{tab:testing}
-  \begin{tabularx}{\textwidth}{llX}
+  \begin{tabularx}{\textwidth}{>{\bfseries}l p{4.2cm} X}
     \toprule
-    \textbf{Level} & \textbf{Tools} & \textbf{Coverage} \\
+    \textbf{Level} & \textbf{Testing Tools} & \textbf{Scope and Coverage} \\
     \midrule
     Unit            & JUnit 5, AssertJ, Mockito  & \texttt{Chunker} boundary conditions (0 B, 1 B, 1 MiB-1, 1 MiB, 1 MiB+1, multi-chunk), SHA-256 correctness, placement distinctness and spread, merge-patch semantics, replica state transitions, chunk ID validation. \\
     Slice           & \texttt{@WebMvcTest}       & HTTP status codes, JSON error body structure, multipart validation. \\
-    Integration     & Spring Boot Test + Testcontainers (real PostgreSQL) + WireMock (4 stub workers) & Upload round-trip, download with SHA-256 failover, concurrent 8-thread uploads, worker failure and reconciliation, corruption detection and repair, metadata PATCH lifecycle. \\
-    Worker          & \texttt{@TempDir} + MockMvc & Atomic writes, checksum rejection, corrupt-on-read detection, inventory listing. \\
-    End-to-End      & Bash + \texttt{curl} + \texttt{jq} + \texttt{sha256sum} + Docker & All 6 PDF \textchar16710 scenarios as asserting scripts + volume persistence test. \\
-    Frontend        & Node 20 test runner + esbuild & Formatting helpers, metadata validation, replica matrix rendering, event deduplication, typed API client. \\
+    Integration     & Spring Boot Test, Testcontainers, WireMock & Upload round-trip, download with SHA-256 failover, concurrent 8-thread uploads, worker failure and reconciliation, corruption detection and repair, metadata PATCH lifecycle. \\
+    Worker          & \texttt{@TempDir}, MockMvc & Atomic writes, checksum rejection, corrupt-on-read detection, inventory listing. \\
+    End-to-End      & Bash, \texttt{curl}, \texttt{jq}, \texttt{sha256sum} & All 6 coursework scenarios (\S10.1--\S10.6) as asserting scripts + volume persistence across restart. \\
+    Frontend        & Node 20 test runner, esbuild & Formatting helpers, metadata validation, replica matrix rendering, event deduplication, typed API client. \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -925,29 +932,73 @@ The system is covered at five levels:
 %% ---
 %%  CHAPTER 9 --- DEMONSTRATION SCENARIOS
 %% ---
-\chapter{Demonstration Scenarios (PDF \textchar16710)}
+\chapter{Demonstration Scenarios (Coursework Specification \S10)}
 
-All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} through \texttt{06-data-integrity.sh} and orchestrated by \texttt{scripts/e2e/run-all.sh}.
+All six mandatory evaluation scenarios defined in Section 10 of the coursework specification (\texttt{Mini\_Distributed\_Cloud\_Object\_Store.pdf}) are fully automated as individual bash test scripts in \texttt{scripts/demo/01-object-storage.sh} through \texttt{06-data-integrity.sh}, and orchestrated end-to-end by \texttt{scripts/e2e/run-all.sh}.
 
-\section{\textchar16710.1 --- Object Storage}
+\section{Scenario 1: Object Storage (Coursework \S10.1)}
+\label{sec:demo-10-1}
 
-\textbf{Objective:} Prove that an arbitrary binary file can be uploaded to the system and downloaded back byte-identically.
+\begin{infobox}[Demonstration Scenario Summary --- \S10.1 Object Storage]
+\begin{tabularx}{\textwidth}{lX}
+\textbf{Requirement:}      & Ingest arbitrary binary object $\rightarrow$ stream download $\rightarrow$ assert byte-identical hash equality. \\
+\textbf{Automated Script:} & \texttt{scripts/demo/01-object-storage.sh} \\
+\textbf{Primary APIs:}     & \texttt{POST /api/v1/objects}, \texttt{GET /api/v1/objects/\{objectId\}} \\
+\textbf{Acceptance Test:}  & HTTP \texttt{201 Created} on upload; HTTP \texttt{200 OK} on download; $\text{SHA-256}_{\text{orig}} \equiv \text{SHA-256}_{\text{down}}$. \\
+\end{tabularx}
+\end{infobox}
 
-\textbf{Procedure:}
-\begin{enumerate}
-  \item Generate a ~2.35 MiB binary file and record its SHA-256: \texttt{sha256sum demo1.bin}
-  \item Upload via \texttt{POST /api/v1/objects}; note returned \texttt{objectId} and \texttt{checksumSha256}.
-  \item Download via \texttt{GET /api/v1/objects/\{objectId\}}.
-  \item Re-compute SHA-256 on the downloaded file and compare all three values.
+\subsection{Objective and Context}
+This demonstration verifies the primary functional contract of the object storage service: an arbitrary multi-megabyte binary payload is uploaded via multipart HTTP, ingested, chunked into 1~MiB segments, replicated across storage workers, and subsequently downloaded via streaming reassembly such that the reconstructed file is bit-for-bit identical to the original input.
+
+\subsection{Demonstration Procedure}
+The demonstration executes the following four-stage sequence:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Payload Generation:} Generate a deterministic 2,465,792-byte ($\approx 2.35$~MiB) binary test file using pseudo-random bytes and compute its baseline SHA-256 digest:
+\begin{lstlisting}[style=bashStyle]
+head -c 2465792 /dev/urandom > /tmp/demo1.bin
+ORIG_SHA=$(sha256sum /tmp/demo1.bin | awk '{print $1}')
+\end{lstlisting}
+  \item \textbf{Object Ingestion:} Upload the file via \texttt{POST /api/v1/objects} with custom metadata:
+\begin{lstlisting}[style=bashStyle]
+curl -s -X POST http://localhost:8080/api/v1/objects \
+  -F "file=@/tmp/demo1.bin;filename=demo1.bin;type=application/octet-stream" \
+  -F 'metadata={"scenario":"10.1","test":"object-storage"}'
+\end{lstlisting}
+  The Controller creates an \texttt{ACTIVE} object record, streams 3 chunks (two 1~MiB chunks and one 368,640-byte chunk) in parallel to distinct workers, and returns \texttt{201 Created} containing the \texttt{objectId} and server-computed \texttt{checksumSha256}.
+  \item \textbf{Streaming Retrieval:} Download the object via \texttt{GET /api/v1/objects/\{objectId\}}:
+\begin{lstlisting}[style=bashStyle]
+curl -s -D /tmp/headers.txt http://localhost:8080/api/v1/objects/$OBJ_ID \
+  -o /tmp/demo1.downloaded.bin
+\end{lstlisting}
+  The Controller streams the ordered chunks directly to the response body while verifying each chunk's SHA-256 on the fly.
+  \item \textbf{Integrity Assertion:} Compute the SHA-256 hash of the downloaded file and assert strict three-way equality:
+\[
+  \text{SHA-256}(\text{original}) \;=\; \text{SHA-256}(\text{controller metadata}) \;=\; \text{SHA-256}(\text{downloaded})
+\]
 \end{enumerate}
 
-\screenshot{Terminal output for Demo \textchar16710.1 --- sha256sum equality between original, controller, and downloaded file}{demo-01-sha256}
+\screenshot{Terminal execution output for Demonstration \S10.1 showing matching SHA-256 checksums and HTTP 200 headers}{demo-01-sha256}
 
-\textbf{Expected result:} All three SHA-256 digests are identical. Response headers include \texttt{X-Object-Checksum-SHA256} and \texttt{Content-Disposition: attachment; filename="demo1.bin"}.
+\subsection{Verification and Expected Results}
+\begin{itemize}[leftmargin=*]
+  \item The upload returns HTTP \texttt{201 Created} with header \texttt{Location: /api/v1/objects/<objectId>}.
+  \item The response JSON reports \texttt{chunkCount: 3}, \texttt{replicationFactor: 2}, and \texttt{status: "ACTIVE"}.
+  \item The download response returns HTTP \texttt{200 OK} with headers:
+    \begin{itemize}
+      \item \texttt{Content-Type: application/octet-stream}
+      \item \texttt{Content-Length: 2465792}
+      \item \texttt{Content-Disposition: attachment; filename="demo1.bin"}
+      \item \texttt{X-Object-Checksum-SHA256: <64-hex-digest>}
+      \item \texttt{ETag: "<64-hex-digest>"}
+    \end{itemize}
+  \item The downloaded file size exactly matches the uploaded size, and \texttt{sha256sum} confirms zero bit corruption across all chunks.
+\end{itemize}
 
-\section{\textchar16710.2 --- Chunking and Distribution}
+\section{Scenario 2: Chunking and Distribution (Coursework \S10.2)}
+\label{sec:demo-10-2}
 
-\textbf{Objective:} Prove that a ~5 MiB file is split into exact 1 MiB chunks (last chunk smaller) distributed across all 4 workers.
+\textbf{Objective:} Prove that a $\approx 5.3$~MiB file is split into exact 1~MiB chunks (last chunk smaller) distributed across all 4 workers.
 
 \textbf{Procedure:}
 \begin{enumerate}
@@ -961,9 +1012,10 @@ All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} thro
 
 \screenshot{Terminal showing \texttt{docker exec} output of .chunk files inside worker containers}{demo-02-docker-exec}
 
-\textbf{Expected result:} 6 chunks, 5 \textchar215 1,048,576 bytes + 1 \textchar215 314,572 bytes; chunks distributed across all 4 workers.
+\textbf{Expected result:} 6 chunks, 5 $\times$ 1,048,576 bytes + 1 $\times$ 314,572 bytes; chunks distributed across all 4 workers.
 
-\section{\textchar16710.3 --- Replication}
+\section{Scenario 3: Replication Verification (Coursework \S10.3)}
+\label{sec:demo-10-3}
 
 \textbf{Objective:} Prove that every chunk has exactly 2 \texttt{HEALTHY} replicas on distinct worker nodes.
 
@@ -975,7 +1027,8 @@ All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} thro
 
 \screenshot{Cluster status API response showing 0 under-replicated and 0 unavailable chunks}{demo-03-cluster-status}
 
-\section{\textchar16710.4 --- Metadata Operations}
+\section{Scenario 4: Metadata Operations and Lifecycle (Coursework \S10.4)}
+\label{sec:demo-10-4}
 
 \textbf{Objective:} Prove custom metadata can be added, updated, and deleted without re-uploading any chunk data.
 
@@ -991,7 +1044,8 @@ All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} thro
 
 \twoscreenshots{Metadata GET before PATCH --- original key-value pairs}{demo-04-before-patch}{Metadata GET after PATCH --- updated owner, added stage, env removed}{demo-04-after-patch}
 
-\section{\textchar16710.5 --- Worker Failure and Recovery}
+\section{Scenario 5: Worker Failure and Fault Tolerance (Coursework \S10.5)}
+\label{sec:demo-10-5}
 
 \textbf{Objective:} Prove the system remains readable during a worker failure and automatically restores RF = 2 after recovery.
 
@@ -1011,7 +1065,8 @@ All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} thro
 
 \screenshot{Cluster status after repair --- RF=2 restored on surviving workers; after reconcile --- worker2 rejoined with exact RF=2}{demo-05-repaired}
 
-\section{\textchar16710.6 --- Data Integrity Verification and Recovery}
+\section{Scenario 6: Data Integrity and Bit-Rot Recovery (Coursework \S10.6)}
+\label{sec:demo-10-6}
 
 \textbf{Objective:} Prove the system detects on-disk chunk corruption, transparently serves from the healthy replica, and repairs the corrupted replica.
 
@@ -1037,30 +1092,85 @@ All 6 scenarios are automated in \texttt{scripts/demo/01-object-storage.sh} thro
 \chapter{Design Decisions and Trade-offs}
 
 \section{Key Design Decisions}
+\label{sec:design-decisions}
+
+The design of the Mini Distributed Cloud Object Store balances simplicity, robustness, and fidelity to cloud distributed systems principles. Table~\ref{tab:design} provides a consolidated summary of the twelve core architectural decisions (D1--D12) implemented throughout the cluster, followed by in-depth technical rationale.
 
 \begin{table}[H]
   \centering
-  \caption{Summary of key design decisions.}
+  \small
+  \caption{Consolidated Summary of Architectural Design Decisions}
   \label{tab:design}
-  \begin{tabularx}{\textwidth}{lXl}
+  \begin{tabularx}{\textwidth}{>{\bfseries}l p{4.2cm} X}
     \toprule
-    \textbf{ID} & \textbf{Decision} & \textbf{Rationale} \\
+    \textbf{ID} & \textbf{Architectural Decision} & \textbf{Design Rationale and Trade-off} \\
     \midrule
-    D1  & Fixed 1 MiB chunk size & Required by specification; predictable memory bounds. \\
-    D2  & RF = 2 on distinct workers & Fault tolerance for single worker failure without 3\textchar215 storage overhead. \\
-    D3  & Deterministic chunk IDs (\texttt{objectId\_index}) & Human-readable in logs; globally unique; lexically sortable. \\
-    D4  & Atomic temp-write-then-rename on workers & Prevents corrupt partial writes surviving a crash. \\
-    D5  & SHA-256 at both Worker (disk) and Controller (receive) & Two independent verifications to catch network corruption and disk rot. \\
-    D6  & Controller-mediated streaming & Acceptable for coursework; keeps workers simple; memory bounded via \texttt{StreamingResponseBody}. \\
-    D7  & Grace period before re-replication & Avoids unnecessary data movement for brief worker restarts / network blips. \\
-    D8  & Surplus trimming on rejoin reconciliation & Guarantees exact $RF = 2$; prevents unbounded replica accumulation. \\
-    D9  & Deferred deletion queue (\texttt{pending\_deletions}) & Object delete succeeds immediately even when a worker is offline. \\
-    D10 & Opt-in debug corruption endpoint & Enables \textchar16710.6 demo without coupling corruption logic into production code paths. \\
-    D11 & \texttt{UPLOADING} lifecycle + rollback & Prevents incomplete objects from being visible or downloaded. \\
-    D12 & JSON Merge Patch for metadata PATCH & Null-means-delete semantics are intuitive for key-value metadata without re-upload. \\
+    D1  & Fixed 1~MiB chunk size ($1,048,576$~B) & Enforces coursework specification; bounds heap memory usage to $O(\text{chunk\_size})$ during streaming reassembly. \\
+    \addlinespace
+    D2  & Replication Factor $\text{RF} = 2$ on distinct nodes & Guarantees high availability against any single worker failure without the $3\times$ storage overhead of triple replication. \\
+    \addlinespace
+    D3  & Deterministic chunk IDs (\texttt{\{objId\}\_\{index:05d\}}) & Global uniqueness, lexical sortability matching chunk order, and direct human-readability across logs, dashboard, and filesystem. \\
+    \addlinespace
+    D4  & Atomic write-then-rename on storage workers & Writes to \texttt{temp/}, calculates SHA-256, flushes via \texttt{fsync}, and renames atomically to prevent torn or corrupted writes across crashes. \\
+    \addlinespace
+    D5  & Two-layer independent SHA-256 verification & Independent verification at worker read (disk integrity) and controller ingest/download (network transit integrity) catches bit-rot and transmission errors. \\
+    \addlinespace
+    D6  & Controller-mediated streaming data path & Centralises placement and replica coordination while streaming buffers (\texttt{StreamingResponseBody}) prevent memory bloat on large uploads/downloads. \\
+    \addlinespace
+    D7  & Re-replication grace period ($30\,\text{s}$) & Prevents premature, expensive network re-replication storms caused by transient network blips or brief container restarts. \\
+    \addlinespace
+    D8  & Surplus replica trimming upon rejoin & Automatically discovers surplus third copies after an offline node returns, safely trimming replicas back to exact $\text{RF} = 2$. \\
+    \addlinespace
+    D9  & Asynchronous deferred deletion queue & Ensures immediate HTTP \texttt{204 No Content} on object deletion while guaranteeing eventual consistency for offline storage nodes via \texttt{pending\_deletions}. \\
+    \addlinespace
+    D10 & Configuration-gated debug corruption hook & Enables repeatable demonstration of bit-rot detection and recovery without exposing unauthenticated corruption vectors in production. \\
+    \addlinespace
+    D11 & Strict \texttt{UPLOADING} $\rightarrow$ \texttt{ACTIVE} state machine & Prevents incomplete or partial uploads from ever becoming visible to readers, rolling back all persisted chunk replicas on write failure. \\
+    \addlinespace
+    D12 & RFC 7396 JSON Merge Patch for metadata & Enables updating or removing custom key-value pairs with null-deletion semantics without triggering costly binary payload re-upload or worker I/O. \\
     \bottomrule
   \end{tabularx}
 \end{table}
+
+\subsection{Storage Chunking, Streaming, and Lifecycle Control (D1, D3, D6, D11)}
+A fundamental challenge in distributed object stores is handling files whose size exceeds available RAM. In this system:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Exact 1~MiB Segmentation (D1):} Objects are partitioned into uniform $1,048,576$-byte chunks using streaming input buffers. Only the final chunk of an object may be smaller than 1~MiB. This uniformity simplifies placement, balancing, and parallel replication.
+  \item \textbf{Deterministic Identifier Mapping (D3):} Chunks are named following the pattern \texttt{\{objectId\}\_\{index:05d\}}. This ensures natural lexicographical ordering matching the chunk's position in the original object, eliminates race conditions during concurrent re-assembly, and facilitates transparent debugging on worker filesystems.
+  \item \textbf{Bounded Memory Streaming (D6):} Both uploads and downloads stream through Spring's \texttt{StreamingResponseBody} using Java~21 virtual threads. Peak memory consumption in the Controller is strictly bounded at $O(\text{chunk\_size} \times \text{concurrency})$, allowing the system to handle gigabyte-scale objects safely on constrained nodes.
+  \item \textbf{Atomic Ingestion State Machine (D11):} When an upload begins, an \texttt{objects} entity is inserted with status \texttt{UPLOADING}. Only when every single chunk has been verified and persisted to at least $\text{RF} = 2$ distinct workers is the object transitioned to \texttt{ACTIVE}. If any unrecoverable failure occurs during upload, all partial replicas already written to workers are deleted, and the database record is purged.
+\end{itemize}
+
+\subsection{Replication, High Availability, and Rejoin Reconciliation (D2, D7, D8, D9)}
+Fault tolerance is enforced through careful replica placement and automated state reconciliation:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Strict Node Distinctness (D2):} The \texttt{PlacementService} sorts active storage nodes by load (\texttt{chunk\_count ASC, used\_bytes ASC}) and applies a rotating cursor tie-breaker. Crucially, it enforces that no two replicas of the same chunk reside on the same physical worker container, guaranteeing single-node survivability.
+  \item \textbf{Grace Period Hysteresis (D7):} When a worker container crashes or misses heartbeats for 10 seconds, it is marked \texttt{DOWN}. However, background re-replication does not trigger immediately; instead, a 30-second grace period (\texttt{REREPLICATION\_GRACE\_PERIOD\_MS}) is enforced. This prevents unnecessary high-bandwidth replica copying if the worker is simply performing a quick restart.
+  \item \textbf{Surplus Replica Trimming (D8):} If a worker remains down past the grace period, the \texttt{ReplicationService} creates new replicas on surviving nodes to restore $\text{RF} = 2$. When the failed node eventually rejoins, it still holds the older chunks. The reconciliation engine detects that $\text{RF} = 3$ and issues \texttt{DELETE /internal/chunks/\{id\}} calls to trim the surplus, restoring exact $\text{RF} = 2$ balance.
+  \item \textbf{Eventual Consistency for Deletions (D9):} When an object is deleted, any chunk replicas on currently \texttt{DOWN} workers cannot be immediately expunged. Rather than failing the delete request or leaving permanent orphan files, the Controller queues records in \texttt{pending\_deletions}. When the offline worker re-registers, these pending deletions are executed prior to inventory reconciliation.
+\end{itemize}
+
+\subsection{Worker Storage Atomicity and Integrity Verification (D4, D5, D10)}
+Ensuring zero silent data corruption requires rigorous end-to-end checksumming:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Write Atomicity (D4):} Workers receive chunks via \texttt{PUT /internal/chunks/\{id\}}. The payload is written to a temporary file in \texttt{/data/chunks/temp/}, its SHA-256 is validated against the incoming \texttt{X-Chunk-Checksum} header, the file descriptor is flushed via \texttt{fsync()}, and the file is atomically moved (\texttt{Files.move(..., ATOMIC\_MOVE)}) to its final sharded path alongside a JSON metadata sidecar.
+  \item \textbf{Dual-Layer Checksumming (D5):} Integrity is validated at two independent layers:
+    \begin{enumerate}
+      \item \textit{Storage Node Layer:} On every \texttt{GET /internal/chunks/\{id\}}, the worker re-reads the raw chunk bytes and asserts the hash against the sidecar \texttt{.meta.json}. Any mismatch returns HTTP \texttt{409 CHUNK\_CORRUPTED}.
+      \item \textit{Controller Ingest/Egress Layer:} When streaming chunks to client downloads or during background scrubbing, the Controller computes the SHA-256 of received bytes and verifies it against the authoritative value stored in PostgreSQL's \texttt{chunks} table.
+    \end{enumerate}
+  \item \textbf{Transparent Read Failover and In-Place Healing:} If a worker returns a corrupted chunk or an I/O error during a download, the Controller instantly marks that replica \texttt{CORRUPTED} in the database, emits a \texttt{CHUNK\_CORRUPTED} system event, and transparently fails over to the healthy secondary replica on another worker node. During the next scrub or admin repair, the corrupted replica file is overwritten in-place with verified bytes from the healthy replica.
+\end{itemize}
+
+\subsection{Custom Metadata Extensibility via JSON Merge Patch (D12)}
+Cloud storage systems must allow updating object metadata without re-uploading the entire binary content. The system implements RFC~7396 \textbf{JSON Merge Patch} semantics on \texttt{PATCH /api/v1/objects/\{objectId\}/metadata}:
+\begin{itemize}[leftmargin=*]
+  \item Sending \texttt{\{"key": "value"\}} adds a new key or replaces an existing value.
+  \item Sending \texttt{\{"key": null\}} deletes the key from the object's custom metadata.
+  \item Keys not mentioned in the patch document remain completely untouched.
+  \item Optimistic concurrency control via a database \texttt{version} column prevents lost updates.
+  \item Critically, metadata modifications execute strictly within PostgreSQL; zero chunk I/O or worker communication is incurred.
+\end{itemize}
 
 \section{Known Limitations}
 

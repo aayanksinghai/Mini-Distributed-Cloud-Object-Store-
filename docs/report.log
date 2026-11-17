@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.13)  17 NOV 2026 16:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.5.13)  17 NOV 2026 17:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -935,27 +935,114 @@ Package pdfcol Info: New color stack `tcb@breakable' = 1 on input line 23.
 \tcb@totallowerbox=\box95
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 105.
- (./report.aux)
+
+! Illegal parameter number in definition of \label@name.
+<to be read again> 
+                   4
+l.168       \label{fig:#4}
+                          
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Illegal parameter number in definition of \reserved@a.
+<to be read again> 
+                   4
+l.168       \label{fig:#4}
+                          
+You meant to type ## instead of #, right?
+Or maybe a } was forgotten somewhere earlier, and things
+are all screwed up? I'm going to assume that you meant ##.
+
+! Undefined control sequence.
+\subcaption@endminipage ...ption@endminipage@hook 
+                                                  \endminipage 
+l.169     \end{subfigure}
+                         
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Extra \endgroup.
+\color@endgroup ->\endgraf \endgroup 
+                                     
+l.169     \end{subfigure}
+                         
+Things are pretty mixed up, but I think the worst is over.
+
+! Too many }'s.
+\endminipage ...pagefalse \color@endgroup \egroup 
+                                                  \expandafter \@iiiparbox \...
+l.169     \end{subfigure}
+                         
+You've closed more groups than you opened.
+Such booboos are generally harmless, so keep going.
+
+! Undefined control sequence.
+\endminipage ...\expandafter \@iiiparbox \@mpargs 
+                                                  {\unvbox \@tempboxa }
+l.169     \end{subfigure}
+                         
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Argument of \@iiiparbox has an extra }.
+<inserted text> 
+                \par 
+l.171 }
+       
+I've run across a `}' that doesn't seem to match anything.
+For example, `\def\a#1{...}' and `\a}' would produce
+this error. If you simply proceed now, the `\par' that
+I've just inserted will cause me to report a runaway
+argument that might be the root of the problem. But if
+your `}' was spurious, just type `2' and it will go away.
+
+Runaway argument?
+\@checkend {subfigure}\expandafter \endgroup \if@endpe \@doendpe \fi \ETC.
+! Paragraph ended before \@iiiparbox was complete.
+<to be read again> 
+                   \par 
+l.171 }
+       
+I suspect you've forgotten a `}', causing me to apply this
+control sequence to too much text. How can we recover?
+My plan is to forget the whole thing and hope for the best.
+
+! Too many }'s.
+<recently read> }
+                 
+l.171 }
+       
+You've closed more groups than you opened.
+Such booboos are generally harmless, so keep going.
+
+(./report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 167.
-LaTeX Font Info:    ... okay on input line 167.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 174.
+LaTeX Font Info:    ... okay on input line 174.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -973,8 +1060,8 @@ LaTeX Font Info:    ... okay on input line 167.
 * \textheight=702.78308pt
 * \oddsidemargin=-1.1381pt
 * \evensidemargin=-1.1381pt
-* \topmargin=-38.1381pt
-* \headheight=12.0pt
+* \topmargin=-41.1381pt
+* \headheight=15.0pt
 * \headsep=25.0pt
 * \topskip=12.0pt
 * \footskip=30.0pt
@@ -1017,18 +1104,18 @@ e
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring ON on input line 167.
+Package hyperref Info: Link coloring ON on input line 174.
 
 (./report.out) (./report.out)
 \@outlinefile=\write4
 \openout4 = `report.out'.
 
 LaTeX Font Info:    Trying to load font information for U+fontawesomefree0 on i
-nput line 191.
+nput line 198.
 
 (/usr/share/texlive/texmf-dist/tex/latex/fontawesome5/ufontawesomefree0.fd)
 LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 2
-06.
+13.
 
 (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2023/04/13 v2.5m Standard LaTeX font definitions
@@ -1040,26 +1127,23 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.34 ...e Algorithms and Workflows}{21}{chapter.6}
+l.34 ...e Algorithms and Workflows}{19}{chapter.6}
                                                   % [1
 
 ])
 \tf@toc=\write5
 \openout5 = `report.toc'.
 
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[2] (./report.lof
+ [2] (./report.lof
 Overfull \hbox (21.54637pt too wide) in paragraph at lines 4--4
  [][] [][][]\T1/cmr/m/n/12 Docker Com-pose clus-ter sta-tus show-ing all con-ta
 in-ers healthy (\T1/cmtt/m/n/12 docker-compose 
+ []
+
+
+Overfull \hbox (2.06787pt too wide) in paragraph at lines 19--19
+ [][] [][][]\T1/cmr/m/n/12 Terminal ex-e-cu-tion out-put for Demon-stra-tion Ÿ1
+0.1 show-ing match-ing SHA- 
  []
 
 
@@ -1091,23 +1175,15 @@ Chapter 1.
 [5
 
 ]
-Overfull \hbox (16.0588pt too wide) in paragraph at lines 255--256
+Overfull \hbox (16.0588pt too wide) in paragraph at lines 262--263
 []\T1/cmr/m/n/12 Detect worker fail-ures via heart-beats and \T1/cmr/bx/n/12 au
 -to-mat-i-cally re-replicate \T1/cmr/m/n/12 under-replicated
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
 [6]
 Chapter 2.
 
-Underfull \hbox (badness 6063) in paragraph at lines 321--321
+Underfull \hbox (badness 6063) in paragraph at lines 328--328
 []\T1/cmr/m/n/12 Figure 2.2: |Docker Com-pose clus-ter sta-tus show-ing all con
 -tain-ers healthy
  []
@@ -1115,88 +1191,46 @@ Underfull \hbox (badness 6063) in paragraph at lines 321--321
 [7
 
 ]
-Overfull \hbox (42.3302pt too wide) in paragraph at lines 343--344
+Overfull \hbox (42.3302pt too wide) in paragraph at lines 350--351
 []\T1/cmr/m/n/12 Accepts in-ter-nal chunk \T1/cmtt/m/n/12 PUT / GET / DELETE \T
 1/cmr/m/n/12 re-quests au-then-ti-cated via \T1/cmtt/m/n/12 X-Internal-Token\T1
 /cmr/m/n/12 . 
  []
 
 
-Overfull \hbox (25.4927pt too wide) in paragraph at lines 344--345
+Overfull \hbox (25.4927pt too wide) in paragraph at lines 351--352
 \T1/cmtt/m/n/12 ATOMIC_MOVE \T1/cmr/m/n/12 to a two-level sharded path: \T1/cmt
 t/m/n/12 chunks/<2-hex-prefix>/<chunk_id>.chunk\T1/cmr/m/n/12 . 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
 [8]
-Overfull \hbox (1.31435pt too wide) in paragraph at lines 366--376
+Overfull \hbox (1.31435pt too wide) in paragraph at lines 373--383
  [][] 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
 [9]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[10]
 Chapter 3.
 
-Underfull \hbox (badness 5316) in paragraph at lines 442--442
+Underfull \hbox (badness 5316) in paragraph at lines 449--449
 []|\T1/cmr/m/n/12 Static as-set serv-ing + \T1/cmtt/m/n/12 /api/* \T1/cmr/m/n/1
 2 re-verse proxy to
  []
 
-[11
+[10
 
 ]
-Underfull \hbox (badness 1019) in paragraph at lines 466--466
+Underfull \hbox (badness 1019) in paragraph at lines 473--473
 []|\T1/cmr/m/n/12 Real Post-greSQL con-tainer for in-te-gra-tion tests
  []
 
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 473.
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[12]
+nput line 480.
+[11]
 Chapter 4.
-[13
+[12
 
-]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[14]
-Overfull \hbox (57.15398pt too wide) in paragraph at lines 601--602
+] [13]
+Overfull \hbox (57.15398pt too wide) in paragraph at lines 608--609
 []\T1/cmr/m/n/12 The write pro-to-col is strictly \T1/cmr/bx/n/12 write-to-temp
  $\OMS/cmsy/m/n/12 !$ \T1/cmr/bx/n/12 ver-ify SHA-256 $\OMS/cmsy/m/n/12 !$ \T1/
 cmr/bx/n/12 fsync $\OMS/cmsy/m/n/12 !$ \T1/cmr/bx/n/12 ATOMIC_MOVE\T1/cmr/m/n/1
@@ -1204,2634 +1238,646 @@ cmr/bx/n/12 fsync $\OMS/cmsy/m/n/12 !$ \T1/cmr/bx/n/12 ATOMIC_MOVE\T1/cmr/m/n/1
  []
 
 
-Overfull \hbox (9.21892pt too wide) in paragraph at lines 610--611
+Overfull \hbox (9.21892pt too wide) in paragraph at lines 617--618
 []\T1/cmr/m/n/12 For ex-am-ple, the third chunk (in-dex 2) of ob-ject \T1/cmtt/
 m/n/12 6b2c0a3a-9c77-4f8f-9a21-512e4ef63c01
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[15]
+[14]
 Chapter 5.
 
-Underfull \hbox (badness 10000) in paragraph at lines 641--641
+Underfull \hbox (badness 10000) in paragraph at lines 648--648
 []|\T1/cmr/m/n/12 Stream re-con-structed
  []
 
 
-Underfull \hbox (badness 2103) in paragraph at lines 641--641
+Underfull \hbox (badness 2103) in paragraph at lines 648--648
 \T1/cmr/m/n/12 ob-ject with SHA-256
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 641--641
+Underfull \hbox (badness 10000) in paragraph at lines 648--648
 []|\T1/cmr/m/n/12 Metadata +
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 641--641
+Underfull \hbox (badness 10000) in paragraph at lines 648--648
 \T1/cmr/m/n/12 chunk/replica place-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 641--641
+Underfull \hbox (badness 10000) in paragraph at lines 648--648
 []|\T1/cmr/m/n/12 JSON Merge Patch
  []
 
 
-Underfull \hbox (badness 1253) in paragraph at lines 641--641
+Underfull \hbox (badness 1253) in paragraph at lines 648--648
 \T1/cmr/m/n/12 cus-tom meta-data (no
  []
 
 
-Underfull \hbox (badness 2941) in paragraph at lines 641--641
+Underfull \hbox (badness 2941) in paragraph at lines 648--648
 []|\T1/cmr/m/n/12 Delete ob-ject + de-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 641--641
+Underfull \hbox (badness 10000) in paragraph at lines 648--648
 \T1/cmr/m/n/12 ferred dele-tions for
  []
 
-[16
+[15
 
 ]
-Overfull \hbox (13.89137pt too wide) in paragraph at lines 663--664
+Overfull \hbox (13.89137pt too wide) in paragraph at lines 670--671
 \T1/cmr/m/n/12 Internal APIs are au-then-ti-cated with \T1/cmtt/m/n/12 X-Intern
 al-Token: <INTERNAL_API_TOKEN> \T1/cmr/m/n/12 (shared
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 680--680
+Underfull \hbox (badness 10000) in paragraph at lines 687--687
 []|\T1/cmr/m/n/12 Worker startup
  []
 
 
-Underfull \hbox (badness 3623) in paragraph at lines 680--680
+Underfull \hbox (badness 3623) in paragraph at lines 687--687
 \T1/cmr/m/n/12 reg-is-tra-tion + auto-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 680--680
+Underfull \hbox (badness 10000) in paragraph at lines 687--687
 []|\T1/cmr/m/n/12 Store chunk (ver-ify
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 680--680
+Underfull \hbox (badness 10000) in paragraph at lines 687--687
 \T1/cmtt/m/n/12 X-Chunk-Checksum
  []
 
 
-Underfull \hbox (badness 3354) in paragraph at lines 680--680
+Underfull \hbox (badness 3354) in paragraph at lines 687--687
 \T1/cmr/m/n/12 256 on-disk ver-i-fi-ca-
  []
 
 
-Overfull \hbox (13.15858pt too wide) in paragraph at lines 701--701
+Overfull \hbox (13.15858pt too wide) in paragraph at lines 708--708
 []|\T1/cmr/bx/n/12 Description| 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 All reg-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 is-tered
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 work-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 ers with
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 health/-ca-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 Cluster
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 RF sum-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 mary:
  []
 
 
-Overfull \hbox (4.71764pt too wide) in paragraph at lines 701--701
+Overfull \hbox (4.71764pt too wide) in paragraph at lines 708--708
 \T1/cmr/m/n/12 healthy/de-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 grad-ed/u-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 navail-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 able/-cor-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 rupted
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 Trigger
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 im-me-di-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 ate re-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 replication
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 (by-passes
  []
 
 
-Underfull \hbox (badness 6825) in paragraph at lines 701--701
+Underfull \hbox (badness 6825) in paragraph at lines 708--708
 \T1/cmr/m/n/12 grace pe-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 Full in-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 ven-tory
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 rec-on-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 cil-i-a-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 for one
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 SHA-256
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 scrub +
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 op-tional
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 re-pair
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 across
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 all UP
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 Demo:
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 proxy
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 byte-flip
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 cor-rup-tion
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 []|\T1/cmr/m/n/12 Paginated
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 sys-tem
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 event
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmr/m/n/12 log with
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 701--701
+Underfull \hbox (badness 10000) in paragraph at lines 708--708
 \T1/cmtt/m/n/12 since
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[17]
+[16]
 Overfull \vbox (50.16751pt too high) has occurred while \output is active []
 
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[18]
-Overfull \hbox (22.4781pt too wide) in paragraph at lines 720--721
+[17]
+Overfull \hbox (22.4781pt too wide) in paragraph at lines 727--728
 \T1/cmtt/m/n/12 CHUNK_CORRUPTED\T1/cmr/m/n/12 , \T1/cmtt/m/n/12 CHUNK_UNAVAILAB
 LE\T1/cmr/m/n/12 , \T1/cmtt/m/n/12 WORKER_NOT_FOUND\T1/cmr/m/n/12 , \T1/cmtt/m/
 n/12 INSUFFICIENT_STORAGE_NODES\T1/cmr/m/n/12 ,
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[19]
+[18]
 Chapter 6.
-[20
+[19
 
 ]
-Overfull \hbox (29.9432pt too wide) in paragraph at lines 771--772
+Overfull \hbox (29.9432pt too wide) in paragraph at lines 778--779
 \T1/cmr/m/n/12 replica be-fore com-mit-ting HTTP \T1/cmtt/m/n/12 200 OK \T1/cmr
 /m/n/12 head-ers --- en-sures a clean \T1/cmtt/m/n/12 503 CHUNK_UNAVAILABLE
  []
 
 
-Overfull \hbox (53.61743pt too wide) in paragraph at lines 778--779
+Overfull \hbox (53.61743pt too wide) in paragraph at lines 785--786
 []\T1/cmr/m/n/12 On mis-match or \T1/cmtt/m/n/12 409 CHUNK_CORRUPTED\T1/cmr/m/n
 /12 : mark that replica \T1/cmtt/m/n/12 CORRUPTED\T1/cmr/m/n/12 , log \T1/cmtt/
 m/n/12 CHUNK_CORRUPTED
  []
 
 
-Overfull \hbox (32.64793pt too wide) in paragraph at lines 780--781
+Overfull \hbox (32.64793pt too wide) in paragraph at lines 787--788
 []\T1/cmr/m/n/12 Stream each ver-i-fied chunk di-rectly into the HTTP re-sponse
  body (\T1/cmtt/m/n/12 StreamingResponseBody\T1/cmr/m/n/12 ). 
  []
 
 
-Overfull \hbox (69.53354pt too wide) in paragraph at lines 788--789
+Overfull \hbox (69.53354pt too wide) in paragraph at lines 795--796
 []\T1/cmr/bx/n/12 RepairScheduler \T1/cmr/m/n/12 runs ev-ery \T1/cmtt/m/n/12 RE
 PAIR_INTERVAL_MS \T1/cmr/m/n/12 (10s). Af-ter \T1/cmtt/m/n/12 REREPLICATION_GRA
 CE_PERIOD_MS
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 809--809
-[]|\T1/cmr/m/n/12 Re-reads all chunks pe-
+Underfull \hbox (badness 10000) in paragraph at lines 816--816
+[]|\T1/cmr/m/n/12 Worker
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 809--809
-\T1/cmr/m/n/12 ri-od-i-cally and re-ports
+Underfull \hbox (badness 5359) in paragraph at lines 816--816
+[]|\T1/cmr/m/n/12 Received bytes vs. Post-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 809--809
+Underfull \hbox (badness 10000) in paragraph at lines 816--816
+[]|\T1/cmr/m/n/12 Controller
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 816--816
 []|\T1/cmtt/m/n/12 POST
  []
 
 
-Overfull \hbox (99.54997pt too wide) in paragraph at lines 809--809
+Overfull \hbox (90.36115pt too wide) in paragraph at lines 816--816
 \T1/cmtt/m/n/12 /api/v1/admin/integrity/scrub?repair=true
  []
 
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
+Underfull \hbox (badness 1147) in paragraph at lines 816--816
+\T1/cmr/m/n/12 over-writes \T1/cmtt/m/n/12 CORRUPTED \T1/cmr/m/n/12 repli-cas
+ []
 
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[21]
+Underfull \hbox (badness 10000) in paragraph at lines 816--816
+[]|\T1/cmr/m/n/12 Controller
+ []
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[22]
+[20] [21]
 Chapter 7.
-[23
+[22
 
 ]
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 833--833
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 840--840
 [][] 
  []
 
-! Undefined control sequence.
-<argument> [ ReplicaMatrix (chunks \textchar 
-                                             215 workers) coloured by HEALTH...
-l.833 ...D/UNAVAILABLE state}{dash-replica-matrix}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 833--833
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 840--840
 [][] 
  []
 
-! Undefined control sequence.
-<argument> ReplicaMatrix (chunks \textchar 
-                                           215 workers) coloured by HEALTHY/...
-l.833 ...D/UNAVAILABLE state}{dash-replica-matrix}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<argument> ReplicaMatrix (chunks \textchar 
-                                           215 workers) coloured by HEALTHY/...
-l.833 ...D/UNAVAILABLE state}{dash-replica-matrix}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Underfull \hbox (badness 10000) in paragraph at lines 840--840
+[]\T1/cmr/m/n/10.95 (b) |Repli-ca-Ma-trix (chunks $\OMS/cmsy/m/n/10.95 ^^B$ \T1
+/cmr/m/n/10.95 work-ers)
+ []
 
 
-Underfull \hbox (badness 3503) in paragraph at lines 833--833
-[]\T1/cmr/m/n/10.95 (b) |Repli-ca-Ma-trix (chunks 215 work-ers)
+Underfull \hbox (badness 3746) in paragraph at lines 840--840
+\T1/cmr/m/n/10.95 coloured by HEALTHY/-COR-RUPT-ED/U-
  []
 
 LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 838.
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[24]
-! Undefined control sequence.
-<argument> Chunk \textchar 
-                           215 Worker Replica Matrix (\texttt {ReplicaMatrix}):
-l.839 ...Replica Matrix (\texttt{ReplicaMatrix}):}
-                                                   Interactive table mapping...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[25]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[26]
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 845.
+[23] [24]
 Chapter 8.
-! Undefined control sequence.
-<inserted text> ...+ Docker & All 6 PDF \textchar 
-                                                  16710 scenarios as asserti...
-l.884   \end{tabularx}
-                      
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-
-Package tabularx Warning: X Columns too narrow (table too wide)
-(tabularx)                 on input line 884.
-
-
-Overfull \hbox (42.26047pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/bx/n/12 Coverage| 
- []
-
-
-Overfull \hbox (31.46732pt too wide) in paragraph at lines 884--884
-[]|\T1/cmtt/m/n/12 Chunker
- []
-
-
-Overfull \hbox (24.47318pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 bound-
- []
-
-
-Overfull \hbox (4.89462pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ary
- []
-
-
-Overfull \hbox (9.78926pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 con-
- []
-
-
-Overfull \hbox (1.95784pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 di-
- []
-
-
-Overfull \hbox (13.1176pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tions
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 (0
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 B,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 1
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 B,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 1
- []
-
-
-Overfull \hbox (14.5145pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 MiB-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 1,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 1
- []
-
-
-Overfull \hbox (13.86186pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 MiB,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 1
- []
-
-
-Overfull \hbox (28.87207pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 MiB+1,
- []
-
-
-Overfull \hbox (19.25221pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 multi-
- []
-
-
-Overfull \hbox (26.431pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 chunk),
- []
-
-
-Overfull \hbox (16.30713pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 SHA-
- []
-
-
-Overfull \hbox (5.87357pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 256
- []
-
-
-Overfull \hbox (7.8314pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cor-
- []
-
-
-Overfull \hbox (11.74713pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 rect-
- []
-
-
-Overfull \hbox (12.53024pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ness,
- []
-
-
-Overfull \hbox (18.2733pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 place-
- []
-
-
-Overfull \hbox (14.03131pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ment
- []
-
-
-Overfull \hbox (6.59142pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 dis-
- []
-
-
-Overfull \hbox (16.31543pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tinct-
- []
-
-
-Overfull \hbox (9.26717pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ness
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 and
- []
-
-
-Overfull \hbox (24.86475pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 spread,
- []
-
-
-Overfull \hbox (22.84167pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 merge-
- []
-
-
-Overfull \hbox (16.64175pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 patch
- []
-
-
-Overfull \hbox (2.02312pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 se-
- []
-
-
-Overfull \hbox (14.3576pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 man-
- []
-
-
-Overfull \hbox (9.20186pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tics,
- []
-
-
-Overfull \hbox (22.189pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 replica
- []
-
-
-Overfull \hbox (13.11763pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 state
- []
-
-
-Overfull \hbox (13.70499pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tran-
- []
-
-
-Overfull \hbox (16.38068pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tions,
- []
-
-
-Overfull \hbox (18.5996pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 chunk
- []
-
-
-Overfull \hbox (1.46213pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ID
- []
-
-
-Overfull \hbox (6.85245pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 val-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 i-
- []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 da-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion.| 
- []
-
-
-Overfull \hbox (22.01962pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/m/n/12 HTTP
- []
-
-
-Overfull \hbox (7.24405pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 sta-
- []
-
-
-Overfull \hbox (3.98096pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tus
- []
-
-
-Overfull \hbox (19.31746pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 codes,
- []
-
-
-Overfull \hbox (18.75652pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 JSON
- []
-
-
-Overfull \hbox (1.95787pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 er-
- []
-
-
-Overfull \hbox (3.26309pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ror
- []
-
-
-Overfull \hbox (14.03125pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 body
- []
-
-
-Overfull \hbox (17.68593pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 struc-
- []
-
-
-Overfull \hbox (12.39975pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ture,
- []
-
-
-Overfull \hbox (11.4208pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 mul-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ti-
- []
-
-
-Overfull \hbox (9.78928pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 part
- []
-
-
-Overfull \hbox (6.85245pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 val-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 i-
- []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 da-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion.| 
- []
-
-
-Overfull \hbox (25.12163pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/m/n/12 Upload
- []
-
-
-Overfull \hbox (22.18903pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 round-
- []
-
-
-Overfull \hbox (10.44186pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 trip,
- []
-
-
-Overfull \hbox (19.25224pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 down-
- []
-
-
-Overfull \hbox (9.78926pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 load
- []
-
-
-Overfull \hbox (11.0945pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 with
- []
-
-
-Overfull \hbox (16.30713pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 SHA-
- []
-
-
-Overfull \hbox (5.87357pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 256
- []
-
-
-Overfull \hbox (28.71516pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 failover,
- []
-
-
-Overfull \hbox (9.78926pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 con-
- []
-
-
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cur-
- []
-
-
-Overfull \hbox (8.81036pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 rent
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 8-
- []
-
-
-Overfull \hbox (21.53642pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 thread
- []
-
-
-Overfull \hbox (5.22095pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 up-
- []
-
-
-Overfull \hbox (17.68591pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 loads,
- []
-
-
-Overfull \hbox (22.51534pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 worker
- []
-
-
-Overfull \hbox (8.1577pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 fail-
- []
-
-
-Overfull \hbox (4.56834pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ure
+Underfull \hbox (badness 10000) in paragraph at lines 891--891
+[]|\T1/cmr/m/n/12 JUnit 5, As-sertJ,
  []
 
 
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 and
+Underfull \hbox (badness 10000) in paragraph at lines 891--891
+[]|\T1/cmr/m/n/12 Bash, \T1/cmtt/m/n/12 curl\T1/cmr/m/n/12 , \T1/cmtt/m/n/12 jq
+\T1/cmr/m/n/12 ,
  []
 
 
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 rec-
+Underfull \hbox (badness 3108) in paragraph at lines 891--891
+[]|\T1/cmr/m/n/12 Formatting helpers, meta-data val-i-da-tion,
  []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 on-
- []
-
-
-Overfull \hbox (3.91566pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cil-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 i-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 a-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion,
- []
-
-
-Overfull \hbox (7.8314pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cor-
- []
-
-
-Overfull \hbox (9.78928pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 rup-
- []
-
-
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion
- []
-
-
-Overfull \hbox (3.91573pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 de-
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tec-
- []
-
-
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 and
- []
-
-
-Overfull \hbox (1.95787pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 re-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 pair,
- []
-
-
-Overfull \hbox (17.62071pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 meta-
- []
-
-
-Overfull \hbox (11.09451pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 data
- []
-
-
-Overfull \hbox (28.86795pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 PATCH
- []
-
-
-Overfull \hbox (7.5051pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 life-
- []
-
-
-Overfull \hbox (3.58937pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cy-
- []
-
-
-Overfull \hbox (5.22092pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 cle.| 
- []
-
-
-Overfull \hbox (25.44792pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/m/n/12 Atomic
- []
-
-
-Overfull \hbox (22.25426pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 writes,
- []
-
-
-Overfull \hbox (19.90483pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 check-
- []
-
-
-Overfull \hbox (9.2019pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 sum
- []
-
-
-Overfull \hbox (1.95787pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 re-
- []
-
-
-Overfull \hbox (6.19987pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 jec-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion,
- []
-
-
-Overfull \hbox (30.02043pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 corrupt-
- []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 on-
- []
-
-
-Overfull \hbox (10.44191pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 read
- []
-
-
-Overfull \hbox (3.91573pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 de-
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tec-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion,
- []
-
-
-Overfull \hbox (1.95784pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 in-
- []
-
-
-Overfull \hbox (9.78928pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ven-
- []
-
-
-Overfull \hbox (9.46295pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tory
- []
-
-
-Overfull \hbox (7.89664pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 list-
- []
-
-
-Overfull \hbox (7.17877pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ing.| 
- []
-
-! Undefined control sequence.
-<inserted text> ...+ Docker & All 6 PDF \textchar 
-                                                  16710 scenarios as asserti...
-l.884   \end{tabularx}
-                      
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (3.5852pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/m/n/12 All
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 6
- []
-
-
-Overfull \hbox (12.88295pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 PDF
- []
-
-
-Overfull \hbox (17.6207pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 16710
- []
-
-
-Overfull \hbox (7.24405pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 sce-
- []
-
-
-Overfull \hbox (9.13666pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 nar-
- []
-
-
-Overfull \hbox (2.02309pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ios
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 as
- []
-
-
-Overfull \hbox (2.67572pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 as-
- []
-
-
-Overfull \hbox (11.15977pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 sert-
- []
-
-
-Overfull \hbox (3.9157pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ing
- []
-
-
-Overfull \hbox (21.66687pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 scripts
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 +
- []
-
-
-Overfull \hbox (7.17877pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 vol-
- []
-
-
-Overfull \hbox (9.78929pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ume
- []
-
-
-Overfull \hbox (8.81035pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 per-
- []
-
-
-Overfull \hbox (4.6988pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 sis-
- []
-
-
-Overfull \hbox (15.01024pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tence
- []
-
-
-Overfull \hbox (10.50714pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 test.| 
- []
-
-
-Overfull \hbox (45.84433pt too wide) in paragraph at lines 884--884
-[]|\T1/cmr/m/n/12 Formatting
- []
-
-
-Overfull \hbox (27.80151pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 helpers,
- []
-
-
-Overfull \hbox (17.62071pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 meta-
- []
-
-
-Overfull \hbox (11.09451pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 data
- []
-
-
-Overfull \hbox (6.85245pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 val-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 884--884
-\T1/cmr/m/n/12 i-
- []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 da-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion,
- []
-
-
-Overfull \hbox (22.189pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 replica
- []
-
-
-Overfull \hbox (7.83142pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ma-
- []
-
-
-Overfull \hbox (6.85246pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 trix
- []
-
-
-Overfull \hbox (8.48405pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ren-
- []
-
-
-Overfull \hbox (8.48405pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 der-
- []
-
-
-Overfull \hbox (7.17877pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ing,
- []
-
-
-Overfull \hbox (15.33655pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 event
- []
-
-
-Overfull \hbox (16.9681pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 dedu-
- []
-
-
-Overfull \hbox (5.22092pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 pli-
- []
-
-
-Overfull \hbox (3.26308pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 ca-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 tion,
- []
-
-
-Overfull \hbox (17.29437pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 typed
- []
-
-
-Overfull \hbox (9.28938pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 API
- []
-
-
-Overfull \hbox (19.2522pt too wide) in paragraph at lines 884--884
-\T1/cmr/m/n/12 client.| 
- []
-
-
-Overfull \hbox (87.07094pt too wide) in alignment at lines 884--884
-[][][] 
- []
-
-[27
-
-]
-Overfull \vbox (1727.53418pt too high) has occurred while \output is active []
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[28]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
 
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+[25
 
-[29]
-Overfull \hbox (3.32584pt too wide) in paragraph at lines 920--921
+] [26]
+Overfull \hbox (3.32584pt too wide) in paragraph at lines 927--928
 []\T1/cmtt/m/n/12 WorkerFailureAndReconciliationIntegrationTest\T1/cmr/bx/n/12 
 : \T1/cmr/m/n/12 Worker DOWN replica tran-
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[30]
+[27]
 Chapter 9.
-! Undefined control sequence.
-<argument> ...onstration Scenarios (PDF \textchar 
-                                                  16710)
-l.928 ...nstration Scenarios (PDF \textchar16710)}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<argument> ...onstration Scenarios (PDF \textchar 
-                                                  16710)}{\thepage }{\@curre...
-l.928 ...nstration Scenarios (PDF \textchar16710)}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...onstration Scenarios (PDF \textchar 
-                                                  16710)
-l.928 ...nstration Scenarios (PDF \textchar16710)}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...onstration Scenarios (PDF \textchar 
-                                                  16710)
-l.928 ...nstration Scenarios (PDF \textchar16710)}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> Demonstration Scenarios (PDF \textchar 
-                                                  16710)
-l.928 ...nstration Scenarios (PDF \textchar16710)}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (80.58899pt too wide) in paragraph at lines 930--931
-\T1/cmr/m/n/12 All 6 sce-nar-ios are au-to-mated in \T1/cmtt/m/n/12 scripts/dem
-o/01-object-storage.sh \T1/cmr/m/n/12 through \T1/cmtt/m/n/12 06-data-integrity
-.sh
+Overfull \hbox (43.89691pt too wide) in paragraph at lines 935--935
+|\T1/cmr/bx/n/24.88 Demonstration Sce-nar-ios (Course-work Spec-
  []
 
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.1 --- Object Storage
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.1 --- Object Storage
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Overfull \hbox (17.0933pt too wide) in paragraph at lines 937--938
+\T1/cmr/m/n/12 bash test scripts in \T1/cmtt/m/n/12 scripts/demo/01-object-stor
+age.sh \T1/cmr/m/n/12 through \T1/cmtt/m/n/12 06-data-integrity.sh\T1/cmr/m/n/1
+2 ,
+ []
 
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.1 --- Object Storage
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.1 --- Object Storage
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Underfull \hbox (badness 10000) in paragraph at lines 948--948
+[]|\T1/cmtt/m/n/12 POST /api/v1/objects\T1/cmr/m/n/12 , \T1/cmtt/m/n/12 GET
+ []
 
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.1 --- Object Storage
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.1 --- Object Storage...
-l.932 ...tion{\textchar16710.1 --- Object Storage}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... Terminal output for Demo \textchar 
-                                                  16710.1 --- sha256sum equa...
-l.944 ...ler, and downloaded file}{demo-01-sha256}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... Terminal output for Demo \textchar 
-                                                  16710.1 --- sha256sum equa...
-l.944 ...ler, and downloaded file}{demo-01-sha256}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> Terminal output for Demo \textchar 
-                                              16710.1 --- sha256sum equality...
-l.944 ...ler, and downloaded file}{demo-01-sha256}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> Terminal output for Demo \textchar 
-                                              16710.1 --- sha256sum equality...
-l.944 ...ler, and downloaded file}{demo-01-sha256}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-[31
+[28
 
 ]
-Overfull \hbox (53.69829pt too wide) in paragraph at lines 946--947
-\T1/cmtt/m/n/12 X-Object-Checksum-SHA256 \T1/cmr/m/n/12 and \T1/cmtt/m/n/12 Con
-tent-Disposition: attachment; filename="demo1.bin"\T1/cmr/m/n/12 . 
+Overfull \hbox (56.34364pt too wide) in paragraph at lines 985--986
+[]\T1/cmr/m/n/12 The up-load re-turns HTTP \T1/cmtt/m/n/12 201 Created \T1/cmr/
+m/n/12 with header \T1/cmtt/m/n/12 Location: /api/v1/objects/<objectId>\T1/cmr/
+m/n/12 . 
  []
 
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.2 --- Chunking and Distribution
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.2 --- Chunking and D...
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.2 --- Chunking and D...
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.2 --- Chunking and D...
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.2 --- Chunking and Dis...
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.2 --- Chunking and D...
-l.948 ...har16710.2 --- Chunking and Distribution}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (16.99803pt too wide) in paragraph at lines 955--956
+[29]
+Overfull \hbox (16.99803pt too wide) in paragraph at lines 1006--1007
 []\T1/cmr/m/n/12 Inspect \T1/cmtt/m/n/12 GET /api/v1/objects/{objectId}/metadat
 a\T1/cmr/m/n/12 : ver-ify \T1/cmtt/m/n/12 chunkCount = 6\T1/cmr/m/n/12 , chunk
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[32]
-! Undefined control sequence.
-l.964 ...f{Expected result:} 6 chunks, 5 \textchar
-                                                  215 1,048,576 bytes + 1 \t...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-l.964 ...textchar215 1,048,576 bytes + 1 \textchar
-                                                  215 314,572 bytes; chunks ...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.3 --- Replication
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.3 --- Replication
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.3 --- Replication
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.3 --- Replication
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.3 --- Replication
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.3 --- Replication}{\...
-l.966 \section{\textchar16710.3 --- Replication}
-                                                
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[33]
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.4 --- Metadata Operations
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.4 --- Metadata Opera...
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.4 --- Metadata Opera...
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.4 --- Metadata Opera...
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.4 --- Metadata Operations
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.4 --- Metadata Opera...
-l.978 ...\textchar16710.4 --- Metadata Operations}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (99.33566pt too wide) in paragraph at lines 986--987
+[30] [31]
+Overfull \hbox (99.33566pt too wide) in paragraph at lines 1039--1040
 []\T1/cmtt/m/n/12 PATCH /api/v1/objects/{id}/metadata \T1/cmr/m/n/12 with \T1/c
 mtt/m/n/12 {"owner":"bob","stage":"reviewed","env":null}\T1/cmr/m/n/12 :
  []
 
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[34]
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 992--992
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1045--1045
 [][] 
  []
 
 
-Overfull \hbox (6.79999pt too wide) in paragraph at lines 992--992
+Overfull \hbox (6.79999pt too wide) in paragraph at lines 1045--1045
 [][] 
  []
 
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.5 --- Worker Failure and Recovery
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.5 --- Worker Failure...
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.5 --- Worker Failure...
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.5 --- Worker Failure...
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.5 --- Worker Failure a...
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.5 --- Worker Failure...
-l.994 ...r16710.5 --- Worker Failure and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (97.67079pt too wide) in paragraph at lines 1006--1007
+Overfull \hbox (97.67079pt too wide) in paragraph at lines 1060--1061
 []\T1/cmr/m/n/12 After heart-beat re-registration, trig-ger rec-on-cile: \T1/cm
 tt/m/n/12 POST /api/v1/admin/workers/worker2/reconcile\T1/cmr/m/n/12 . 
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[35]
-! Undefined control sequence.
-<argument> \textchar 
-                     16710.6 --- Data Integrity Verification and Recovery
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.6 --- Data Integrity...
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.6 --- Data Integrity...
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ... >\z@ \thesection . \ \fi \textchar 
-                                                  16710.6 --- Data Integrity...
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> \ifttl@toclabel \ttl@a \fi \textchar 
-                                                16710.6 --- Data Integrity V...
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-<argument> ...ifttl@toclabel \ttl@a \fi \textchar 
-                                                  16710.6 --- Data Integrity...
-l.1014 ...ata Integrity Verification and Recovery}
-                                                  
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[36]
-Overfull \hbox (25.19072pt too wide) in paragraph at lines 1022--1023
+[32]
+Overfull \hbox (25.19072pt too wide) in paragraph at lines 1077--1078
 []\T1/cmr/m/n/12 Download the ob-ject: con-firm byte-identical SHA-256. In-spec
 t events: \T1/cmtt/m/n/12 CHUNK_CORRUPTED
  []
 
-
-Overfull \hbox (62.9922pt too wide) in paragraph at lines 1026--1027
+[33]
+Overfull \hbox (62.9922pt too wide) in paragraph at lines 1081--1082
 []\T1/cmtt/m/n/12 docker exec worker1 sha256sum /data/chunks/chunks/<prefix>/<c
 hunk_id>.chunk
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1030--1030
+Underfull \hbox (badness 10000) in paragraph at lines 1085--1085
 []\T1/cmr/m/n/12 Figure 9.8: |Sys-tem events show-ing CHUNK_CORRUPTED fol-lowed
  by
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[37]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[38]
+[34]
 Chapter 10.
-! Undefined control sequence.
-<inserted text> ...ker failure without 3\textchar 
-                                                  215 storage overhead. \\ D...
-l.1062   \end{tabularx}
-                       
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-<inserted text> ...n endpoint & Enables \textchar 
-                                                  16710.6 demo without coupl...
-l.1062   \end{tabularx}
-                       
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Package tabularx Warning: X Columns too narrow (table too wide)
-(tabularx)                 on input line 1062.
-
-
-Overfull \hbox (37.82268pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/bx/n/12 Decision| 
- []
-
-
-Overfull \hbox (17.12912pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Fixed
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 1
- []
-
-
-Overfull \hbox (10.59879pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 MiB
- []
-
-
-Overfull \hbox (18.5996pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 chunk
- []
-
-
-Overfull \hbox (6.59142pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 size| 
- []
-
-
-Overfull \hbox (4.56413pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 RF
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 =
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 2
- []
-
-
-Overfull \hbox (0.65262pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 on
- []
-
-
-Overfull \hbox (6.59142pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 dis-
- []
-
-
-Overfull \hbox (12.39972pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 tinct
- []
-
-
-Overfull \hbox (16.96806pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 work-
- []
-
-
-Overfull \hbox (2.67574pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 ers| 
- []
-
-! Undefined control sequence.
-<inserted text> ...ker failure without 3\textchar 
-                                                  215 storage overhead. \\ D...
-l.1062   \end{tabularx}
-                       
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
-Overfull \hbox (57.3304pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Deterministic
- []
-
-
-Overfull \hbox (18.5996pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 chunk
- []
-
-
-Overfull \hbox (6.0957pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 IDs
- []
-
-
-Overfull \hbox (83.81842pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 (\T1/cmtt/m/n/12 objectId_index\T1/cmr/m/n/12 )| 
- []
-
-
-Overfull \hbox (25.44792pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Atomic
- []
-
-
-Overfull \hbox (18.27333pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 temp-
- []
-
-
-Overfull \hbox (18.27332pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 write-
- []
-
-
-Overfull \hbox (15.01024pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 then-
- []
-
-
-Overfull \hbox (25.45215pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 rename
- []
-
-
-Overfull \hbox (0.65262pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 on
- []
-
-
-Overfull \hbox (16.96806pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 work-
- []
-
-
-Overfull \hbox (2.67574pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 ers| 
- []
-
-
-Overfull \hbox (16.30713pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 SHA-
- []
-
-
-Overfull \hbox (5.87357pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 256
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 at
- []
-
-
-Overfull \hbox (12.07343pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 both
- []
-
-
-Overfull \hbox (25.44794pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 Worker
- []
-
-
-Overfull \hbox (18.01222pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 (disk)
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 and
- []
-
-
-Overfull \hbox (13.05237pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 Con-
- []
-
-
-Overfull \hbox (19.57854pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 troller
- []
-
-
-Overfull \hbox (6.5262pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 (re-
- []
-
-
-Overfull \hbox (17.62068pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 ceive)| 
- []
-
-
-Overfull \hbox (44.05173pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Controller-
- []
-
-
-Overfull \hbox (35.24141pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 mediated
- []
-
-
-Overfull \hbox (26.82262pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 stream-
- []
-
-
-Overfull \hbox (3.9157pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 ing| 
- []
-
-
-Overfull \hbox (18.35385pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Grace
- []
-
-
-Overfull \hbox (4.24202pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 pe-
- []
-
-
-Overfull \hbox (8.81032pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 riod
- []
-
-
-Overfull \hbox (4.24202pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 be-
- []
-
-
-Overfull \hbox (7.50513pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 fore
- []
-
-
-Overfull \hbox (1.95787pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 re-
- []
-
-
-Overfull \hbox (42.42015pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 replication| 
- []
-
-
-Overfull \hbox (26.82259pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Surplus
- []
-
-
-Overfull \hbox (14.35759pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 trim-
- []
-
-
-Overfull \hbox (13.70497pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 ming
- []
-
-
-Overfull \hbox (0.65262pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 on
- []
-
-
-Overfull \hbox (1.95787pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 re-
- []
-
-
-Overfull \hbox (7.5051pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 join
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 rec-
- []
-
-
-Overfull \hbox (4.56833pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 on-
- []
-
-
-Overfull \hbox (3.91566pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 cil-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 i-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 a-
- []
-
-
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 tion| 
- []
-
-
-Overfull \hbox (32.13942pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Deferred
- []
-
-
-Overfull \hbox (12.39977pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 dele-
- []
-
-
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 tion
- []
-
-
-Overfull \hbox (17.94702pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 queue
- []
-
-
-Overfull \hbox (102.3389pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 (\T1/cmtt/m/n/12 pending_deletions\T1/cmr/m/n/12 )| 
- []
-
-
-Overfull \hbox (12.39973pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 Opt-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 in
- []
-
-
-Overfull \hbox (3.91573pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 de-
- []
-
-
-Overfull \hbox (7.1788pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 bug
- []
-
-
-Overfull \hbox (7.8314pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 cor-
- []
-
-
-Overfull \hbox (9.78928pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 rup-
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/bx/n/10.95 Architectural De-ci-
  []
 
 
-Overfull \hbox (8.48402pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 tion
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Atomic write-then-
  []
 
 
-Overfull \hbox (10.44191pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 end-
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+\T1/cmr/m/n/10.95 rename on stor-age
  []
 
 
-Overfull \hbox (15.0102pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 point| 
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Two-layer in-de-pen-dent
  []
 
-! Undefined control sequence.
-<inserted text> ...n endpoint & Enables \textchar 
-                                                  16710.6 demo without coupl...
-l.1062   \end{tabularx}
-                       
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-
-Overfull \hbox (43.8143pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmtt/m/n/12 UPLOADING
- []
-
-
-Overfull \hbox (7.5051pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 life-
- []
-
-
-Overfull \hbox (3.58937pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 cy-
- []
-
-
-Overfull \hbox (1.95784pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 cle
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 +
- []
-
-
-Overfull \hbox (9.13663pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 roll-
- []
-
-
-Overfull \hbox (11.7471pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 back| 
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Controller-mediated
  []
 
 
-Overfull \hbox (18.75652pt too wide) in paragraph at lines 1062--1062
-[]|\T1/cmr/m/n/12 JSON
+Underfull \hbox (badness 2401) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Centralises place-ment and replica co-or-di-na-tion while
  []
 
 
-Overfull \hbox (19.90073pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 Merge
+Underfull \hbox (badness 2980) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Prevents pre-ma-ture, ex-pen-sive net-work re-replication
  []
 
 
-Overfull \hbox (17.78175pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 Patch
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Asynchronous de-ferred
  []
 
 
-Overfull \hbox (2.28416pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 for
+Underfull \hbox (badness 4341) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Configuration-gated de-
  []
 
 
-Overfull \hbox (17.62071pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 meta-
+Underfull \hbox (badness 10000) in paragraph at lines 1132--1132
+[]|\T1/cmr/m/n/10.95 Strict \T1/cmtt/m/n/10.95 UPLOADING $\OMS/cmsy/m/n/10.95 !
+$
  []
 
+[35
 
-Overfull \hbox (11.09451pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 data
+] [36]
+Overfull \hbox (2.53308pt too wide) in paragraph at lines 1147--1148
+\T1/cmr/m/n/12 by load (\T1/cmtt/m/n/12 chunk_count ASC, used_bytes ASC\T1/cmr/
+m/n/12 ) and ap-plies a ro-tat-ing cur-sor tie-breaker.
  []
 
 
-Overfull \hbox (28.86795pt too wide) in paragraph at lines 1062--1062
-\T1/cmr/m/n/12 PATCH| 
+Overfull \hbox (18.61977pt too wide) in paragraph at lines 1148--1149
+\T1/cmr/m/n/12 trig-ger im-me-di-ately; in-stead, a 30-second grace pe-riod (\T
+1/cmtt/m/n/12 REREPLICATION_GRACE_PERIOD_MS\T1/cmr/m/n/12 )
  []
-
-
-Overfull \hbox (114.78781pt too wide) in alignment at lines 1062--1062
-[][][] 
- []
-
-[39
-
-]
-Overfull \vbox (644.66743pt too high) has occurred while \output is active []
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[40]
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[41]
+[37] [38] [39]
 Chapter 11.
 
-Overfull \hbox (5.91254pt too wide) in paragraph at lines 1082--1083
+Overfull \hbox (5.91254pt too wide) in paragraph at lines 1192--1193
 \T1/cmr/m/n/12 This project suc-cess-fully im-ple-ments a com-plete, production
 -structured \T1/cmr/bx/n/12 Mini Dis-tributed
+ []
+
+[40
+
+]
+Overfull \hbox (7.21207pt too wide) in paragraph at lines 1225--1226
+[]\T1/cmr/bx/n/12 Cloud-native soft-ware en-gi-neer-ing: \T1/cmr/m/n/12 Multi-s
+ervice con-tainer-i-sa-tion, health checks,
+ []
+
+[41]
+Appendix A.
+
+Overfull \hbox (259.54437pt too wide) in alignment at lines 1250--1255
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (259.54437pt too wide) in alignment at lines 1255--1260
+ [] [] [] [] 
+ []
+
+
+Overfull \hbox (259.54437pt too wide) in alignment at lines 1260--1284
+ [] [] [] [] 
  []
 
 [42
 
 ]
-Overfull \hbox (7.21207pt too wide) in paragraph at lines 1115--1116
-[]\T1/cmr/bx/n/12 Cloud-native soft-ware en-gi-neer-ing: \T1/cmr/m/n/12 Multi-s
-ervice con-tainer-i-sa-tion, health checks,
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller to compensate:
-
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[43]
-Appendix A.
-
-Overfull \hbox (259.54437pt too wide) in alignment at lines 1140--1145
- [] [] [] [] 
- []
-
-
-Overfull \hbox (259.54437pt too wide) in alignment at lines 1145--1150
- [] [] [] [] 
- []
-
-
-Overfull \hbox (259.54437pt too wide) in alignment at lines 1150--1174
- [] [] [] [] 
- []
-
-[44
-
-]
 Appendix B.
-[45
+[43
 
 ]
 Appendix C.
 
-Underfull \hbox (badness 1210) in paragraph at lines 1235--1235
+Underfull \hbox (badness 1210) in paragraph at lines 1345--1345
 []|\T1/cmr/m/n/12 Worker in-ven-tory rec-on-cil-i-a-tion com-pletes
  []
 
-[46
+[44
 
 ] (./report.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `report.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `report.out':
-(rerunfilecheck)             Before: 95EE0E85CF4A18442B4208C222693AAF;11826
-(rerunfilecheck)             After:  B245C7673096BC909C574B3F6AE5648D;11875.
+Package rerunfilecheck Info: File `report.out' has not changed.
+(rerunfilecheck)             Checksum: C99C6E53F702869CE6B9399DFFAC32AB;15118.
  ) 
 Here is how much of TeX's memory you used:
- 32783 strings out of 476106
- 639006 string characters out of 5793933
+ 32821 strings out of 476106
+ 639589 string characters out of 5793933
  2046975 words of memory out of 5000000
- 54029 multiletter control sequences out of 15000+600000
- 577843 words of font info for 78 fonts, out of 8000000 for 9000
+ 54048 multiletter control sequences out of 15000+600000
+ 579531 words of font info for 81 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 84i,13n,93p,1195b,2010s stack positions out of 10000i,1000n,20000p,200000b,200000s
- </tmp/texfonts/pk/ljfour/jknappen/ec/ecti0600.600pk> </tmp/texfonts/pk/ljfou
-r/jknappen/ec/ecrm0800.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecit1200.600
-pk> </tmp/texfonts/pk/ljfour/jknappen/ec/tcrm1200.600pk> </tmp/texfonts/pk/ljfo
-ur/jknappen/ec/ecit1095.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecrm0600.60
-0pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </tmp/texfonts/pk/ljf
-our/jknappen/ec/ecbx1728.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ectt1200.6
-00pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx1095.600pk> </tmp/texfonts/pk/lj
-four/jknappen/ec/ecrm1200.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx1200.
-600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ectt1095.600pk> </tmp/texfonts/pk/l
-jfour/jknappen/ec/ecrm1095.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx1440
-.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecti1095.600pk> </tmp/texfonts/pk/
-ljfour/jknappen/ec/ecrm1440.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx248
-8.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5/FontAwes
-ome5Free-Solid.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
-12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on report.pdf (47 pages, 407628 bytes).
+ 84i,15n,93p,1195b,2010s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ </tmp/texfonts/pk/ljfour/jknappen/ec/ecti1200.600pk> </tmp/texfonts/pk/ljfou
+r/jknappen/ec/ecti0600.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx0800.600
+pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecrm0800.600pk> </tmp/texfonts/pk/ljfo
+ur/jknappen/ec/ecit1200.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/tcrm1200.60
+0pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecit1000.600pk> </tmp/texfonts/pk/ljf
+our/jknappen/ec/ecti1000.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecrm0600.6
+00pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </tmp/texfonts/pk/lj
+four/jknappen/ec/ecbx1728.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ectt1200.
+600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx1095.600pk> </tmp/texfonts/pk/l
+jfour/jknappen/ec/ecrm1200.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx1200
+.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ectt1095.600pk> </tmp/texfonts/pk/
+ljfour/jknappen/ec/ecrm1095.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx144
+0.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecti1095.600pk> </tmp/texfonts/pk
+/ljfour/jknappen/ec/ecrm1440.600pk> </tmp/texfonts/pk/ljfour/jknappen/ec/ecbx24
+88.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/fontawesome5/FontAwe
+some5Free-Solid.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+i10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pf
+b></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr
+/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/
+texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb>
+Output written on report.pdf (45 pages, 468191 bytes).
 PDF statistics:
- 1694 PDF objects out of 1728 (max. 8388607)
- 838 compressed objects within 9 object streams
- 274 named destinations out of 1000 (max. 500000)
- 533 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1834 PDF objects out of 2073 (max. 8388607)
+ 907 compressed objects within 10 object streams
+ 291 named destinations out of 1000 (max. 500000)
+ 589 words of extra memory for PDF output out of 10000 (max. 10000000)
 
