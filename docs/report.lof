@@ -1,0 +1,31 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces High-level system architecture diagram.}}{7}{figure.caption.5}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Docker Compose cluster status showing all containers healthy (\texttt {docker-compose ps})}}{8}{figure.caption.6}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Object upload and chunking workflow.}}{20}{figure.caption.19}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Dashboard Objects page --- paginated and sortable object list with upload card}}{23}{figure.caption.21}%
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Dashboard Object Detail page --- chunk strip, replica matrix, and metadata editor}}{24}{figure.caption.22}%
+\contentsline {figure}{\numberline {7.4}{\ignorespaces Dashboard Cluster page --- 4 Worker cards, cluster RF summary, and admin action buttons}}{25}{figure.caption.24}%
+\contentsline {figure}{\numberline {7.5}{\ignorespaces Dashboard Events page --- live system event log with severity and type filters}}{26}{figure.caption.25}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {8.1}{\ignorespaces Maven build output showing 63/63 backend tests passing (\texttt {mvn -B verify})}}{29}{figure.caption.28}%
+\contentsline {figure}{\numberline {8.2}{\ignorespaces Frontend test run output showing 8/8 dashboard tests passing (\texttt {npm test})}}{30}{figure.caption.29}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {9.1}{\ignorespaces Terminal output for Demo 16710.1 --- sha256sum equality between original, controller, and downloaded file}}{32}{figure.caption.30}%
+\contentsline {figure}{\numberline {9.2}{\ignorespaces Metadata API response showing 6 chunks, correct sizes, and 4-worker distribution}}{33}{figure.caption.31}%
+\contentsline {figure}{\numberline {9.3}{\ignorespaces Terminal showing \texttt {docker exec} output of .chunk files inside worker containers}}{33}{figure.caption.32}%
+\contentsline {figure}{\numberline {9.4}{\ignorespaces Cluster status API response showing 0 under-replicated and 0 unavailable chunks}}{34}{figure.caption.33}%
+\contentsline {figure}{\numberline {9.6}{\ignorespaces Cluster status showing worker2 DOWN and chunks DEGRADED but downloadable}}{36}{figure.caption.35}%
+\contentsline {figure}{\numberline {9.7}{\ignorespaces Cluster status after repair --- RF=2 restored on surviving workers; after reconcile --- worker2 rejoined with exact RF=2}}{36}{figure.caption.36}%
+\contentsline {figure}{\numberline {9.8}{\ignorespaces System events showing CHUNK\_CORRUPTED followed by CHUNK\_REPAIRED after scrub}}{37}{figure.caption.37}%
+\contentsline {figure}{\numberline {9.9}{\ignorespaces Terminal: sha256sum of on-disk chunk file restored to correct value after repair}}{38}{figure.caption.38}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }

@@ -1,0 +1,33 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {2.1}{\ignorespaces Container network and port mapping.}}{9}{table.caption.7}%
+\contentsline {table}{\numberline {2.2}{\ignorespaces Named Docker volumes and mount paths.}}{10}{table.caption.8}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {3.1}{\ignorespaces Backend technology choices.}}{11}{table.caption.9}%
+\contentsline {table}{\numberline {3.2}{\ignorespaces Frontend technology choices.}}{12}{table.caption.10}%
+\contentsline {table}{\numberline {3.3}{\ignorespaces Infrastructure and tooling.}}{12}{table.caption.11}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {4.1}{\ignorespaces Table: \texttt {workers}}}{13}{table.caption.12}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces Table: \texttt {system\_events}}}{13}{table.caption.13}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces Table: \texttt {objects}}}{14}{table.caption.14}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces Table: \texttt {chunks} and \texttt {chunk\_replicas}}}{14}{table.caption.15}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {5.1}{\ignorespaces The 6 mandatory client-facing REST APIs.}}{16}{table.caption.16}%
+\contentsline {table}{\numberline {5.2}{\ignorespaces The 6 mandatory internal REST APIs.}}{17}{table.caption.17}%
+\contentsline {table}{\numberline {5.3}{\ignorespaces Cluster and admin APIs.}}{18}{table.caption.18}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {6.1}{\ignorespaces Two-layer SHA-256 integrity checks.}}{22}{table.caption.20}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {8.1}{\ignorespaces Multi-level testing strategy.}}{28}{table.caption.26}%
+\contentsline {table}{\numberline {8.2}{\ignorespaces Complete test suite results.}}{29}{table.caption.27}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {10.1}{\ignorespaces Summary of key design decisions.}}{40}{table.caption.39}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {11.1}{\ignorespaces Implementation phases and completion status.}}{42}{table.caption.40}%
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {A.1}{\ignorespaces All configurable environment variables.}}{44}{table.A.1}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {table}{\numberline {C.1}{\ignorespaces All 11 system event types.}}{46}{table.caption.41}%
